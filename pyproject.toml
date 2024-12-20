@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "mdbx"
+version = "0.1.0"
+description = "The python bindings to libmdbx."
+authors = ["lazymio <mio@lazym.io>"]
+readme = "README.md"
+
+[tool.poetry.build]
+script = "build.py"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+
+[build-system]
+requires = ["poetry-core", "setuptools", "wheel", "cmake", "ninja"]
+build-backend = "poetry.core.masonry.api"
