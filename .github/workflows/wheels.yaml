@@ -7,6 +7,7 @@ jobs:
     name: Build wheels on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-13, macos-latest]
 
@@ -19,6 +20,8 @@ jobs:
       # Used to host cibuildwheel
       - name: Setup python
         uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
 
       - name: Setup build tools (Linux)
         if: contains(matrix.os, 'ubuntu')
