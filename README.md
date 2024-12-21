@@ -7,7 +7,7 @@ Originally forked from [libmdbx](https://github.com/erthink/libmdbx/tree/python-
 Try it with
 
 ```bash
-pip install mdbx
+pip install libmdbx
 ```
 
 Contributions and feedbacks are highly welcome. I'm developing a few more pythonic features and adding support for cursors iterating dupsort databases.

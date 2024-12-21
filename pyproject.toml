@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "mdbx"
+name = "libmdbx"
 version = "0.1.0"
 description = "The python bindings to libmdbx."
 homepage = "https://github.com/wtdcode/mdbx-py"
@@ -10,6 +10,9 @@ keywords = [
     "libmdbx",
     "kvdb",
     "bindings"
+]
+packages = [
+    {include = "mdbx"}
 ]
 include = [
     { path = "libmdbx/*", format = "sdist"},
