@@ -15,7 +15,7 @@ exclude = [
 ]
 
 [tool.poetry.build]
-script = "build.py"
+script = "build_mdbx.py"
 
 [tool.poetry.dependencies]
 python = "^3.9"

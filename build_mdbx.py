@@ -17,7 +17,7 @@ def ensure_dependency():
     subprocess.check_call(["cmake", "--version"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     subprocess.check_call(["ninja", "--version"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
-def build():
+def build(setup_kws: dict):
     ensure_dependency()
     debug = "DEBUG" in os.environ
     pwd = Path(os.getcwd())
@@ -56,4 +56,4 @@ def build():
     shutil.copy(libmdbx_source / "LICENSE", pwd / "mdbx" / "lib")
     
 if __name__ == "__main__":
-    build()
+    build({})
