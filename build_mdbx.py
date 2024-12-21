@@ -53,7 +53,7 @@ def build(setup_kws: dict):
         cwd=tmpdir_path
     )
 
-    os.removedirs(out_lib)
+    shutil.rmtree(out_lib)
     os.makedirs(out_lib, exist_ok=True)
     shutil.copy(tmpdir_path / SO_FILE, out_lib)
     shutil.copy(libmdbx_source / "LICENSE", out_lib)
