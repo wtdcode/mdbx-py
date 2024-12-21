@@ -56,7 +56,16 @@ def build(setup_kws: dict):
     if out_lib.exists():
         shutil.rmtree(out_lib)
     os.makedirs(out_lib, exist_ok=True)
-    shutil.copy(tmpdir_path / SO_FILE, out_lib)
+    
+    if sys.platform == "win32":
+        if debug:
+            dyn_path = tmpdir_path / "Debug" / SO_FILE
+        else:
+            dyn_path = tmpdir_path / "Release" / SO_FILE
+    else:
+        dyn_path = tmpdir_path / SO_FILE
+    
+    shutil.copy(dyn_path, out_lib)
     shutil.copy(libmdbx_source / "LICENSE", out_lib)
     
 if __name__ == "__main__":
