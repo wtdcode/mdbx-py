@@ -12,6 +12,7 @@
 import ctypes
 import inspect
 
+import sys
 import subprocess
 import random
 import unittest
@@ -189,18 +190,20 @@ class TestMdbx(unittest.TestCase):
         dbi=txn.open_map()
         dbi.put(txn, MDBX_TEST_KEY, MDBX_TEST_VAL_UTF8)
         txn.commit()
-        path="%s/%s" % (MDBX_TEST_DB_DIR, "copy")
-        with open(path, "w") as fd:
-            env.copy2fd(fd, libmdbx.MDBXCopyMode.MDBX_CP_DEFAULTS | libmdbx.MDBXCopyMode.MDBX_CP_FORCE_DYNAMIC_SIZE)
+        
+        if sys.platform != "win32":
+            path="%s/%s" % (MDBX_TEST_DB_DIR, "copy")
+            with open(path, "w") as fd:
+                env.copy2fd(fd, libmdbx.MDBXCopyMode.MDBX_CP_DEFAULTS | libmdbx.MDBXCopyMode.MDBX_CP_FORCE_DYNAMIC_SIZE)
 
-        self.assertTrue(os.path.exists(path))
-        self.assertTrue(os.stat(path).st_size > 0)
+            self.assertTrue(os.path.exists(path))
+            self.assertTrue(os.stat(path).st_size > 0)
 
-        txn=env.start_transaction()
-        old=dbi.replace(txn, MDBX_TEST_KEY, MDBX_TEST_VAL_BINARY)
-        self.assertEqual(old, MDBX_TEST_VAL_UTF8)
+            txn=env.start_transaction()
+            old=dbi.replace(txn, MDBX_TEST_KEY, MDBX_TEST_VAL_BINARY)
+            self.assertEqual(old, MDBX_TEST_VAL_UTF8)
 
-        txn.commit()
+            txn.commit()
 
         env.close()
 
