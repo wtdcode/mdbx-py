@@ -5,6 +5,7 @@ import os
 import sys
 import multiprocessing
 import shutil
+import platform
 
 SO_FILE = {
     "linux": "libmdbx.so",
