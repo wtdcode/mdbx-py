@@ -15,7 +15,8 @@ SO_FILE = {
 
 def ensure_dependency():
     subprocess.check_call(["cmake", "--version"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    subprocess.check_call(["ninja", "--version"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    if sys.platform == "win32" or sys.platform == "darwin":
+        subprocess.check_call(["ninja", "--version"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 def build(setup_kws: dict):
     ensure_dependency()
