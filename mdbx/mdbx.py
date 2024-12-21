@@ -30,7 +30,7 @@ SO_FILE = {
     "linux": "libmdbx.so",
     "linux2": "libmdbx.so",
     "darwin": "libmdbx.dylib",
-    "win32": "mdbx.dll",
+    "win32": "libmdbx.dll",
 }.get(sys.platform, "libmdbx.so")
 
 _lib_path = Path(__file__).parent.resolve() / "lib" / SO_FILE

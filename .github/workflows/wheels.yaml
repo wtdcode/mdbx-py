@@ -35,7 +35,7 @@ jobs:
         env:
           CIBW_BUILD_FRONTEND: build # pip backend doesn't seem including our dynamic libraries
           CIBW_BUILD: "cp39*"
-          CIBW_BEFORE_BUILD_LINUX: yum install -y ninja-build git && cd libmdbx && git fetch --tags
+          CIBW_BEFORE_BUILD_LINUX: yum install -y ninja git && cd libmdbx && git fetch --tags
           CIBW_BEFORE_BUILD_WINDOWS: choco install ninja cmake git && cd libmdbx && git fetch --tags
           CIBW_BEFORE_BUILD_MACOS: brew install ninja cmake git && cd libmdbx && git fetch --tags
           CIBW_TEST_REQUIRES: pytest
