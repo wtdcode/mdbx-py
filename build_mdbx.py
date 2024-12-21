@@ -20,7 +20,7 @@ def ensure_dependency():
 def build(setup_kws: dict):
     ensure_dependency()
     debug = "DEBUG" in os.environ
-    pwd = Path(os.getcwd())
+    pwd = Path(__file__).parent.resolve()
     out_lib = pwd / "mdbx" / "lib"
     libmdbx_source = pwd / "libmdbx"
 
