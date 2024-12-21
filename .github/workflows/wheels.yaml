@@ -4,30 +4,22 @@ on: [push, pull_request]
 
 jobs:
   build_wheels:
-    name: Build wheels on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
+    name: Build wheels on ${{ matrix.config.os }}
+    runs-on: ${{ matrix.config.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-13, macos-latest]
+        config:
+          - os: ubuntu-latest
+          - os: windows-latest
+          - os: macos-13
+          - os: macos-latest
 
     steps:
       - name: Checkout sources
         uses: actions/checkout@v4
         with:
           submodules: true
-
-      - name: Setup build tools (Linux)
-        if: contains(matrix.os, 'ubuntu')
-        run: sudo apt update && sudo apt install build-essential cmake ninja-build git -y
-      
-      - name: Setup build tools (macOS)
-        if: contains(matrix.os, 'macos')
-        run: brew install ninja cmake
-      
-      - name: Setup build tools (Windows)
-        if: contains(matrix.os, 'windows')
-        run: choco install ninja cmake
 
       # Used to host cibuildwheel
       - name: Setup python
@@ -42,6 +34,9 @@ jobs:
         run: python -m cibuildwheel --output-dir wheelhouse
         env:
           CIBW_BUILD: "cp39*"
+          CIBW_BEFORE_BUILD_LINUX: sudo apt update && sudo apt install build-essential cmake ninja-build git -y
+          CIBW_BEFORE_BUILD_WINDOWS: choco install ninja cmake
+          CIBW_BEFORE_BUILD_MACOS: brew install ninja cmake
         # to supply options, put them in 'env', like:
         # env:
         #   CIBW_SOME_OPTION: value
