@@ -34,7 +34,6 @@ jobs:
         run: python -m cibuildwheel --output-dir wheelhouse
         env:
           CIBW_BUILD: "cp39*"
-          CIBW_BEFORE_BUILD_LINUX: sudo apt update && sudo apt install build-essential cmake ninja-build git -y
           CIBW_BEFORE_BUILD_WINDOWS: choco install ninja cmake
           CIBW_BEFORE_BUILD_MACOS: brew install ninja cmake
         # to supply options, put them in 'env', like:
