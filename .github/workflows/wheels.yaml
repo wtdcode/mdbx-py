@@ -19,7 +19,7 @@ jobs:
       - name: Checkout sources
         uses: actions/checkout@v4
         with:
-          submodules: true
+          submodules: "recursive"
 
       # Used to host cibuildwheel
       - name: Setup python
