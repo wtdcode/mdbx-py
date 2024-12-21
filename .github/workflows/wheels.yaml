@@ -153,7 +153,7 @@ jobs:
       - name: Build SDist
         run: |
           sudo apt update && sudo apt install git build-essential -y
-          cd libmdbx && make dist
+          cd libmdbx && make dist && cd ..
           python3 -m pip install -U pip build
           python3 -m build --sdist
 
