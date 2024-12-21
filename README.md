@@ -10,4 +10,4 @@ Try it with
 pip install mdbx
 ```
 
-Contributions and feedbacks are highly welcome.
+Contributions and feedbacks are highly welcome. I'm developing a few more pythonic features and adding support for cursors iterating dupsort databases.
