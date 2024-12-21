@@ -15,12 +15,12 @@ packages = [
     {include = "mdbx"}
 ]
 include = [
-    { path = "libmdbx/*", format = "sdist"},
+    { path = "libmdbx/dist/*", format = "sdist"},
     { path = "mdbx/lib/*", format = "wheel" },
 ]
 
 exclude = [
-    { path = "libmdbx/.git", format = "sdist"},
+    { path = "libmdbx/dist/build", format = "sdist"},
 ]
 
 [tool.poetry.build]

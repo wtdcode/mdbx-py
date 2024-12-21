@@ -16,8 +16,13 @@ SO_FILE = {
 
 def ensure_dependency():
     subprocess.check_call(["cmake", "--version"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    if sys.platform == "win32" or sys.platform == "darwin":
-        subprocess.check_call(["ninja", "--version"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+def have_git():
+    try:
+        subprocess.check_call(["git", "--version"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        return True
+    except Exception as e:
+        return False
 
 def build(setup_kws: dict):
     ensure_dependency()
@@ -25,6 +30,19 @@ def build(setup_kws: dict):
     pwd = Path(__file__).parent.resolve()
     out_lib = pwd / "mdbx" / "lib"
     libmdbx_source = pwd / "libmdbx"
+    dist_folder = libmdbx_source / "dist"
+    
+    # If there is already dist
+    if not dist_folder.exists():
+        if sys.platform in ["linux", "linux2", "darwin"]:
+            subprocess.check_call(["make", "dist"], cwd=libmdbx_source)
+    
+    if have_git() and (libmdbx_source / ".git").exists():
+        source_folder = libmdbx_source
+    elif dist_folder.exists():
+        source_folder = dist_folder
+    else:
+        raise RuntimeError("Either we need git or we must have a dist available. Did you init submodules?")        
     
     tmpdir = None
     if debug:
@@ -55,7 +73,7 @@ def build(setup_kws: dict):
         ]
         
     cmake_gen += [
-        "-S", str(libmdbx_source.absolute()), "-B", str(tmpdir_path.absolute())
+        "-S", str(source_folder.absolute()), "-B", str(tmpdir_path.absolute())
     ]
     cmake_gen += build_type
     subprocess.check_call(
@@ -69,7 +87,7 @@ def build(setup_kws: dict):
     if out_lib.exists():
         shutil.rmtree(out_lib)
     os.makedirs(out_lib, exist_ok=True)
-    shutil.copy(libmdbx_source / "LICENSE", out_lib)
+    shutil.copy(source_folder / "LICENSE", out_lib)
 
     if sys.platform != "win32":
         subprocess.check_call(
