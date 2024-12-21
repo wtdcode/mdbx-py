@@ -2,9 +2,15 @@
 name = "mdbx"
 version = "0.1.0"
 description = "The python bindings to libmdbx."
+homepage = "https://github.com/wtdcode/mdbx-py"
 authors = ["lazymio <mio@lazym.io>"]
 readme = "README.md"
-
+keywords = [
+    "mdbx",
+    "libmdbx",
+    "kvdb",
+    "bindings"
+]
 include = [
     { path = "libmdbx/*", format = "sdist"},
     { path = "mdbx/lib/*", format = "wheel" },

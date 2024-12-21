@@ -11,7 +11,7 @@ jobs:
       matrix:
         config:
           - os: ubuntu-latest
-          - os: windows-latest
+          - os: windows-2019
           - os: macos-13
           - os: macos-latest
 
