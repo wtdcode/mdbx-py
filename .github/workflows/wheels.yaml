@@ -21,15 +21,15 @@ jobs:
         uses: actions/setup-python@v5
 
       - name: Setup build tools (Linux)
-        if: contains(matrix.config.os, 'ubuntu')
+        if: contains(matrix.os, 'ubuntu')
         run: apt update && apt install build-essentials cmake ninja git -y
       
       - name: Setup build tools (macOS)
-        if: contains(matrix.config.os, 'macos')
+        if: contains(matrix.os, 'macos')
         run: brew install ninja cmake
       
       - name: Setup build tools (Windows)
-        if: contains(matrix.config.os, 'windows')
+        if: contains(matrix.os, 'windows')
         run: choco install ninja cmake
 
       - name: Install cibuildwheel
