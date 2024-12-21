@@ -6,8 +6,8 @@ authors = ["lazymio <mio@lazym.io>"]
 readme = "README.md"
 
 include = [
-    { path = "libmdbx/**", format = "sdist"},
-    { path = "mdbx/lib/**", format = "wheel" },
+    { path = "libmdbx/*", format = "sdist"},
+    { path = "mdbx/lib/*", format = "wheel" },
 ]
 
 exclude = [
@@ -15,6 +15,7 @@ exclude = [
 ]
 
 [tool.poetry.build]
+generate-setup-file = false
 script = "build_mdbx.py"
 
 [tool.poetry.dependencies]
