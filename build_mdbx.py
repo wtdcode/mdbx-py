@@ -21,6 +21,7 @@ def build(setup_kws: dict):
     ensure_dependency()
     debug = "DEBUG" in os.environ
     pwd = Path(os.getcwd())
+    out_lib = pwd / "mdbx" / "lib"
     libmdbx_source = pwd / "libmdbx"
 
     tmpdir = None
@@ -52,8 +53,10 @@ def build(setup_kws: dict):
         cwd=tmpdir_path
     )
 
-    shutil.copy(tmpdir_path / SO_FILE, pwd / "mdbx" / "lib")
-    shutil.copy(libmdbx_source / "LICENSE", pwd / "mdbx" / "lib")
+    os.removedirs(out_lib)
+    os.makedirs(out_lib, exist_ok=True)
+    shutil.copy(tmpdir_path / SO_FILE, out_lib)
+    shutil.copy(libmdbx_source / "LICENSE", out_lib)
     
 if __name__ == "__main__":
     build({})
