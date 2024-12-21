@@ -24,7 +24,7 @@ def build(setup_kws: dict):
     pwd = Path(__file__).parent.resolve()
     out_lib = pwd / "mdbx" / "lib"
     libmdbx_source = pwd / "libmdbx"
-
+    
     tmpdir = None
     if debug:
         tmpdir = pwd / "build_libmdbx"
@@ -43,9 +43,16 @@ def build(setup_kws: dict):
     
     cmake_gen = ["cmake"]
     
-    if sys.platform == "win32" or sys.platform == "darwin":
+    if sys.platform == "darwin":
         cmake_gen += ["-G", "Ninja"]
-
+        
+    if sys.platform == "win32":
+        plat = 'Win32' if platform.architecture()[0] == '32bit' else 'x64'
+        cmake_gen += [
+            "-G", "Visual Studio 16 2019",
+            "-A", plat
+        ]
+        
     cmake_gen += [
         "-S", str(libmdbx_source.absolute()), "-B", str(tmpdir_path.absolute())
     ]
@@ -58,16 +65,25 @@ def build(setup_kws: dict):
     if "THREADS" in os.environ:
         threads = int(os.environ["THREADS"])
     
-    subprocess.check_call(
-        ["cmake", "--build", str(tmpdir_path.absolute()), "-j", str(threads)],
-        cwd=tmpdir_path
-    )
-
     if out_lib.exists():
         shutil.rmtree(out_lib)
     os.makedirs(out_lib, exist_ok=True)
-    shutil.copy(tmpdir_path / SO_FILE, out_lib)
     shutil.copy(libmdbx_source / "LICENSE", out_lib)
+
+    if sys.platform != "win32":
+        subprocess.check_call(
+            ["cmake", "--build", str(tmpdir_path.absolute()), "-j", str(threads)],
+            cwd=tmpdir_path
+        )
+        shutil.copy(tmpdir_path / SO_FILE, out_lib)
+    else:
+        plat = 'Win32' if platform.architecture()[0] == '32bit' else 'x64'
+        conf = 'Debug' if debug else 'Release'
+        subprocess.check_call(
+            ["msbuild", "libmdbx.sln", f"-maxcpucount:{threads}", f"-p:Platform={plat}", f'-p:Configuration={conf}'],
+            cwd=tmpdir_path
+        )
+        shutil.copy(tmpdir_path / conf / SO_FILE, out_lib)
     
 if __name__ == "__main__":
     build({})

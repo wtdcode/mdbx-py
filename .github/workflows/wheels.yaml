@@ -21,6 +21,16 @@ jobs:
         with:
           submodules: "recursive"
 
+      - name: '🛠️ Win MSVC 64 setup'
+        if: contains(matrix.config.os, 'windows')
+        uses: microsoft/setup-msbuild@v2
+    
+      - name: '🛠️ Win MSVC 64 dev cmd setup'
+        if: contains(matrix.config.os, 'windows')
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
       # Used to host cibuildwheel
       - name: Setup python
         uses: actions/setup-python@v5
