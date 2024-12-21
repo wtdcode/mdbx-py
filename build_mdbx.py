@@ -11,7 +11,7 @@ SO_FILE = {
     "linux": "libmdbx.so",
     "linux2": "libmdbx.so",
     "darwin": "libmdbx.dylib",
-    "win32": "libmdbx.dll",
+    "win32": "mdbx.dll",
 }.get(sys.platform, "libmdbx.so")
 
 def ensure_dependency():
