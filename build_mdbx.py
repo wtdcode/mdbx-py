@@ -39,9 +39,18 @@ def build(setup_kws: dict):
         build_type = ["-DCMAKE_BUILD_TYPE=Debug"]
     else:
         build_type = ["-DCMAKE_BUILD_TYPE=Release"]
-        
+    
+    cmake_gen = ["cmake"]
+    
+    if sys.platform == "win32" or sys.platform == "darwin":
+        cmake_gen += ["-G", "Ninja"]
+
+    cmake_gen += [
+        "-S", str(libmdbx_source.absolute()), "-B", str(tmpdir_path.absolute())
+    ]
+    cmake_gen += build_type
     subprocess.check_call(
-        ["cmake", "-G", "Ninja", "-S", str(libmdbx_source.absolute()), "-B", str(tmpdir_path.absolute())] + build_type,
+        cmake_gen,
         cwd=tmpdir_path
     )
     threads = multiprocessing.cpu_count()
