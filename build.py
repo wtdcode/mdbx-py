@@ -52,7 +52,7 @@ def build():
         cwd=tmpdir_path
     )
 
-    shutil.copy(tmpdir_path / "libmdbx.so", pwd / "mdbx" / "lib")
+    shutil.copy(tmpdir_path / SO_FILE, pwd / "mdbx" / "lib")
     shutil.copy(libmdbx_source / "LICENSE", pwd / "mdbx" / "lib")
     
 if __name__ == "__main__":
