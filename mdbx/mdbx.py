@@ -34,7 +34,7 @@ SO_FILE = {
 }.get(sys.platform, "libmdbx.so")
 
 _lib_path = Path(__file__).parent.resolve() / "lib" / SO_FILE
-_lib = ctypes.CDLL(_lib_path)
+_lib = ctypes.CDLL(str(_lib_path.absolute()))
 
 # Names are all CamelCase because PEP 8 states class names have to be CamelCase.
 # Abbreviations like TXN (although they are native class names) are capitalized because of PEP 8, too.
