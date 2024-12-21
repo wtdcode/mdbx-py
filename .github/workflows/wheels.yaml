@@ -21,6 +21,12 @@ jobs:
         with:
           submodules: true
 
+      - name: 'Setup msbuild'
+        if: runner.os == 'Windows'
+        uses: microsoft/setup-msbuild@v2
+        with:
+          vs-version: '16.5'
+
       # Used to host cibuildwheel
       - name: Setup python
         uses: actions/setup-python@v5
