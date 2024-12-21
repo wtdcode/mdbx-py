@@ -4,16 +4,24 @@ on: [push, pull_request]
 
 jobs:
   build_wheels:
-    name: Build wheels on ${{ matrix.config.os }}
+    name: Fast build on ${{ matrix.config.os }} for ${{ matrix.config.cibw }} and ${{ matrix.config.cibw_skip }} 
     runs-on: ${{ matrix.config.os }}
     strategy:
       fail-fast: false
       matrix:
         config:
           - os: ubuntu-latest
+            cibw: "cp39*"
+            cibw_skip: "*musllinux*"
           - os: windows-2019
+            cibw: "cp39*"
+            cibw_skip: "*-win32"
           - os: macos-13
+            cibw: "cp39*"
+            cibw_skip: ""
           - os: macos-latest
+            cibw: "cp39*"
+            cibw_skip: ""
 
     steps:
       - name: Checkout sources
@@ -44,14 +52,14 @@ jobs:
         run: python -m cibuildwheel --output-dir wheelhouse
         env:
           CIBW_BUILD_FRONTEND: build # pip backend doesn't seem including our dynamic libraries
-          CIBW_BUILD: "cp39*"
+          CIBW_BUILD: ${{ matrix.config.cibw }}
           CIBW_ENVIRONMENT: SYSTEM_VERSION_COMPAT=0 # Shitty arm macOS
           CIBW_BEFORE_BUILD_LINUX: cd libmdbx && git fetch --tags
           CIBW_BEFORE_BUILD_WINDOWS: choco install ninja cmake git && cd libmdbx && git fetch --tags
           CIBW_BEFORE_BUILD_MACOS: brew install ninja cmake git && cd libmdbx && git fetch --tags
           CIBW_TEST_REQUIRES: pytest
           CIBW_TEST_COMMAND: pytest {package}/tests
-          CIBW_SKIP: "*-win32"
+          CIBW_SKIP:  ${{ matrix.config.cibw_skip }}
         # to supply options, put them in 'env', like:
         # env:
         #   CIBW_SOME_OPTION: value
@@ -60,6 +68,80 @@ jobs:
         with:
           name: cibw-wheels-${{ matrix.config.os }}-${{ strategy.job-index }}
           path: ./wheelhouse/*.whl
+  
+    
+  build_wheels_all:
+    name: Build wheels on ${{ matrix.config.os }} for ${{ matrix.config.cibw }} and ${{ matrix.config.cibw_skip }} 
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - os: ubuntu-latest
+            cibw: "{cp310*, cp311*}"
+            cibw_skip: "*musllinux*"
+          - os: ubuntu-latest
+            cibw: "{cp312*, cp313*}"
+            cibw_skip: "*musllinux*"
+          - os: windows-2019
+            cibw: "{cp310*, cp311*}"
+            cibw_skip: "*-win32"
+          - os: windows-2019
+            cibw: "{cp312*, cp313*}"
+            cibw_skip: "*-win32"
+          - os: macos-13
+            cibw: "{cp310*, cp311*, cp312*, cp313*}"
+            cibw_skip: ""
+          - os: macos-latest
+            cibw: "{cp310*, cp311*, cp312*, cp313*}"
+            cibw_skip: ""
+    if: startsWith(github.ref, 'refs/tags')
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+        with:
+          submodules: "recursive"
+
+      - name: '🛠️ Win MSVC 64 setup'
+        if: contains(matrix.config.os, 'windows')
+        uses: microsoft/setup-msbuild@v2
+    
+      - name: '🛠️ Win MSVC 64 dev cmd setup'
+        if: contains(matrix.config.os, 'windows')
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
+      # Used to host cibuildwheel
+      - name: Setup python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install cibuildwheel
+        run: python -m pip install cibuildwheel==2.22.0
+
+      - name: Build wheels
+        run: python -m cibuildwheel --output-dir wheelhouse
+        env:
+          CIBW_BUILD_FRONTEND: build # pip backend doesn't seem including our dynamic libraries
+          CIBW_BUILD: ${{ matrix.config.cibw }}
+          CIBW_ENVIRONMENT: SYSTEM_VERSION_COMPAT=0 # Shitty arm macOS
+          CIBW_BEFORE_BUILD_LINUX: cd libmdbx && git fetch --tags
+          CIBW_BEFORE_BUILD_WINDOWS: choco install ninja cmake git && cd libmdbx && git fetch --tags
+          CIBW_BEFORE_BUILD_MACOS: brew install ninja cmake git && cd libmdbx && git fetch --tags
+          CIBW_TEST_REQUIRES: pytest
+          CIBW_TEST_COMMAND: pytest {package}/tests
+          CIBW_SKIP:  ${{ matrix.config.cibw_skip }}
+        # to supply options, put them in 'env', like:
+        # env:
+        #   CIBW_SOME_OPTION: value
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cibw-wheels-${{ matrix.config.os }}-${{ strategy.job-index }}
+          path: ./wheelhouse/*.whl
+  
   make_sdist:
     name: Make SDist
     runs-on: ubuntu-latest
@@ -78,7 +160,7 @@ jobs:
           name: sdist-archive
           path: dist/*.tar.gz
   publish:
-    needs: [ build_wheels, make_sdist ]
+    needs: [ build_wheels, make_sdist, build_wheels_all ]
     environment: pypi
     permissions:
       id-token: write
