@@ -5,6 +5,15 @@ description = "The python bindings to libmdbx."
 authors = ["lazymio <mio@lazym.io>"]
 readme = "README.md"
 
+include = [
+    { path = "libmdbx/**", format = "sdist"},
+    { path = "mdbx/lib/**", format = "wheel" },
+]
+
+exclude = [
+    { path = "libmdbx/.git", format = "sdist"},
+]
+
 [tool.poetry.build]
 script = "build.py"
 
@@ -13,5 +22,5 @@ python = "^3.10"
 
 
 [build-system]
-requires = ["poetry-core", "setuptools", "wheel", "cmake", "ninja"]
+requires = ["poetry-core", "setuptools", "wheel"] # Not having cmake and ninja due to https://github.com/python-poetry/poetry/issues/8807
 build-backend = "poetry.core.masonry.api"

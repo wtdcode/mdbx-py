@@ -22,9 +22,19 @@ import dataclasses
 import enum
 import errno
 import os
+from pathlib import Path
+import sys
 
 # init lib
-_lib = ctypes.CDLL("@MDBX_SOLIB_LOCATION@")
+SO_FILE = {
+    "linux": "libmdbx.so",
+    "linux2": "libmdbx.so",
+    "darwin": "libmdbx.dylib",
+    "win32": "mdbx.dll",
+}.get(sys.platform, "libmdbx.so")
+
+_lib_path = Path(__file__).parent.resolve() / "lib" / SO_FILE
+_lib = ctypes.CDLL(_lib_path)
 
 # Names are all CamelCase because PEP 8 states class names have to be CamelCase.
 # Abbreviations like TXN (although they are native class names) are capitalized because of PEP 8, too.
@@ -1736,7 +1746,10 @@ class TXN:
             return True
         return False
 
-    def open_map(self, name: str=None, flags: MDBXDBFlags=MDBXDBFlags.MDBX_CREATE):
+    def create_map(self, name: str=None, flags: MDBXDBFlags=MDBXDBFlags.MDBX_CREATE):
+        return self.open_map(name, flags | MDBXDBFlags.MDBX_CREATE)
+    
+    def open_map(self, name: str=None, flags: MDBXDBFlags=MDBXDBFlags.MDBX_DB_DEFAULTS):
         """
         Wrapper around mdbx_dbi_open
 
@@ -2866,7 +2879,7 @@ def make_exception(errno: int):
     err = _lib.mdbx_liberr2str(errno)
     if err != None:
         return MDBXErrorExc(errno, err)
-    return OSError(errno, os.strerror(err))
+    return OSError(errno, os.strerror(errno))
 
 _lib.mdbx_strerror_r.argtypes = [ ctypes.c_int, ctypes.c_char_p, ctypes.c_size_t ]
 _lib.mdbx_strerror_r.restype = ctypes.c_char_p

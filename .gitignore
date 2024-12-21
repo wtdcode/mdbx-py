@@ -1,1 +1,8 @@
 .venv
+build
+build_libmdbx
+.pytest_cache
+__pycache__
+mdbx/lib/*
+.vscode
+.gdb_history

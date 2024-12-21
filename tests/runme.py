@@ -20,6 +20,7 @@ import string
 import threading
 import time
 import tempfile
+import mdbx as libmdbx
 
 MDBX_TEST_DIR="%s/MDBX_TEST" % tempfile.gettempdir()
 MDBX_TEST_DB_NAME="MDBX_TEST_DB_NAME"
@@ -69,7 +70,7 @@ class TestMdbx(unittest.TestCase):
         txn=db.start_transaction()
         for i in range(15):
             name=id_generator()
-            dbi=txn.open_map(name)
+            dbi=txn.create_map(name)
             db_pairs[name] = []
 
             for i in range(1024):
@@ -94,7 +95,7 @@ class TestMdbx(unittest.TestCase):
         MDBX_TEST_DB_DIR="%s/%s" % (MDBX_TEST_DIR, inspect.stack()[0][3])
         db=libmdbx.Env(MDBX_TEST_DB_DIR, maxdbs=1024)
         txn=db.start_transaction()
-        opened_map=txn.open_map(MDBX_TEST_DB_NAME)
+        opened_map=txn.create_map(MDBX_TEST_DB_NAME)
         with self.assertRaises(libmdbx.MDBXErrorExc) as cm:
             opened_map.close()
         self.assertEqual(cm.exception.errno, libmdbx.MDBXError.MDBX_BAD_DBI.value)
@@ -104,7 +105,7 @@ class TestMdbx(unittest.TestCase):
         MDBX_TEST_DB_DIR="%s/%s" % (MDBX_TEST_DIR, inspect.stack()[0][3])
         db=libmdbx.Env(MDBX_TEST_DB_DIR, maxdbs=1024)
         txn=db.start_transaction()
-        opened_map=txn.open_map(MDBX_TEST_DB_NAME)
+        opened_map=txn.create_map(MDBX_TEST_DB_NAME)
         opened_map.put(txn, MDBX_TEST_KEY, MDBX_TEST_VAL_UTF8)
         txn.commit()
         opened_map.close()
@@ -121,7 +122,7 @@ class TestMdbx(unittest.TestCase):
                 generated_db_names[name]={}
                 ref=generated_db_names[name]
                 txn=db.start_transaction()
-                dbi=txn.open_map(name)
+                dbi=txn.create_map(name)
                 for k in range(1024):
                     new_key=id_generator().encode("utf-8")
                     if new_key not in ref:
