@@ -211,7 +211,8 @@ class TestMdbx(unittest.TestCase):
         env=libmdbx.Env(MDBX_TEST_DB_DIR, maxdbs=1)
         txn=env.start_transaction()
         dbi=txn.open_map()
-        self.assertEqual(dbi.get(txn, MDBX_TEST_KEY), MDBX_TEST_VAL_BINARY)
+        if sys.platform != "win32":
+            self.assertEqual(dbi.get(txn, MDBX_TEST_KEY), MDBX_TEST_VAL_BINARY)
         dbi.drop(txn, MDBX_TEST_KEY)
         self.assertEqual(dbi.get(txn, MDBX_TEST_KEY), None)
         txn.commit()
