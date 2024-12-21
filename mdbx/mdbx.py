@@ -988,7 +988,7 @@ class MDBXError(enum.IntFlag):
     MDBX_EPERM = errno.EPERM
     MDBX_EINTR = errno.EINTR
     MDBX_ENOFILE = errno.ENOENT
-    MDBX_EREMOTE = errno.ENOTBLK
+    MDBX_EREMOTE = 15 # Win32 doesn't have this
 
 class MDBXMode(enum.IntEnum):
 
