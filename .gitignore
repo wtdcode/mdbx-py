@@ -7,3 +7,4 @@ mdbx/lib/*
 .vscode
 .gdb_history
 poetry.lock
+dist/
