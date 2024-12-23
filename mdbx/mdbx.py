@@ -2003,7 +2003,7 @@ class Env(object):
     def __repr__(self):
         return "Env { \"path\" : \"%s\"}" % self.get_path()
 
-    def __getitem__(self, key: Tuple[str, bytes]):
+    def __getitem__(self, key: str | bytes):
         """
         Gets item from currently set default database
         Opens a read only transaction, gets the object, aborts the transaction
@@ -2027,7 +2027,7 @@ class Env(object):
         except Exception as e:
             return None
 
-    def __setitem__(self, key: Tuple[str, bytes], val: Tuple[str, bytes]):
+    def __setitem__(self, key: str | bytes, val: str | bytes):
         """
         Sets the given key and val in the current default database
         if key or val are strings, they are converted into bytes using utf-8 encoding
