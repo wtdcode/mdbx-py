@@ -2878,7 +2878,7 @@ class Cursor():
             ret = _lib.mdbx_cursor_count(self._cursor, ctypes.byref(count))
             if ret != MDBXError.MDBX_SUCCESS.value:
                 raise make_exception(ret)
-            return int(value)
+            return int(count)
 
     def eof(self) -> bool:
         """
