@@ -2506,7 +2506,7 @@ class DBI:
         """
         pass
 
-    def get(self, txn: TXN, key: bytes) -> bytes:
+    def get(self, txn: TXN, key: bytes) -> Optional[bytes]:
         """
         Wrapper around mdbx_get.
 
