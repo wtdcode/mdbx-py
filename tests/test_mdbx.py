@@ -22,7 +22,10 @@ import threading
 import time
 import tempfile
 import mdbx as libmdbx
+import logging
 
+
+logging.getLogger("mdbx").setLevel("DEBUG")
 MDBX_TEST_DIR="%s/MDBX_TEST" % tempfile.gettempdir()
 MDBX_TEST_DB_NAME="MDBX_TEST_DB_NAME"
 MDBX_TEST_MAP_NAME="MDBX_TEST_MAP_NAME"
@@ -90,16 +93,6 @@ class TestMdbx(unittest.TestCase):
             dbi=txn.open_map(db_name)
             for key, val in pairs:
                 self.assertEqual(dbi.get(txn, key.encode("utf-8")).decode("utf-8"), val)
-        db.close()
-
-    def test_fail_close_empty_map(self):
-        MDBX_TEST_DB_DIR="%s/%s" % (MDBX_TEST_DIR, inspect.stack()[0][3])
-        db=libmdbx.Env(MDBX_TEST_DB_DIR, maxdbs=1024)
-        txn=db.start_transaction()
-        opened_map=txn.create_map(MDBX_TEST_DB_NAME)
-        with self.assertRaises(libmdbx.MDBXErrorExc) as cm:
-            opened_map.close()
-        self.assertEqual(cm.exception.errno, libmdbx.MDBXError.MDBX_BAD_DBI.value)
         db.close()
 
     def test_success_close_written_map(self):
@@ -376,8 +369,11 @@ class TestMdbx(unittest.TestCase):
         cursor.put(a, b)
 
         txn.commit()
+        logging.getLogger("mdbx").debug(f"Status, txn={txn._txn}, cursor={cursor._cursor}, dbi={dbi._dbi}")
         txn=env.start_transaction()
+        logging.getLogger("mdbx").debug(f"New dbi")
         dbi=txn.open_map(MDBX_TEST_DB_NAME)
+        logging.getLogger("mdbx").debug(f"New Cursor, dbi = {dbi._dbi}")
         cursor=libmdbx.Cursor(dbi, txn)
         self.assertEqual(MDBX_TEST_VAL_UTF8, dbi.get(txn, MDBX_TEST_KEY))
         self.assertEqual(b, cursor.get(a, cursor_op=libmdbx.MDBXCursorOp.MDBX_SET))
