@@ -10,7 +10,19 @@ Try it with
 pip install libmdbx
 ```
 
-Contributions and feedbacks are highly welcome. I'm developing a few more pythonic features and adding support for cursors iterating dupsort databases.
+Contributions and feedbacks are highly welcome.
+
+## Usage
+
+A quick sample to read all values from the default database:
+
+```python
+with Env(...) as env:
+    with env.ro_transaction() as txn:
+        with txn.cursor() as cur:
+            for k, v in cur.iter():
+                ...
+```
 
 ## Manual build
 
