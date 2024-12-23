@@ -1,8 +1,6 @@
 # Python bindings for libmdbx
 
-This revives the python bindings for libmdbx.
-
-Originally forked from [libmdbx](https://github.com/erthink/libmdbx/tree/python-bindings) with a few bugs fixed.
+Python bindings for libmdbx.
 
 Try it with
 
@@ -40,3 +38,7 @@ poetry install
 ```
 
 That's it!
+
+## Credits
+
+Forked from [libmdbx](https://github.com/erthink/libmdbx/tree/python-bindings)
