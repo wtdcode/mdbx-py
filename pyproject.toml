@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "libmdbx"
-version = "0.2.0"
+version = "0.2.1"
 description = "The python bindings to libmdbx."
 homepage = "https://github.com/wtdcode/mdbx-py"
 authors = ["lazymio <mio@lazym.io>"]
