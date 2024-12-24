@@ -27,6 +27,12 @@ class MDBXIterTest(unittest.TestCase):
             
             with env.ro_transaction() as txn:
                 with txn.cursor() as cur:
+                    k, v = cur.first()
+                    self.assertEqual((k, v), expected[0])
+                    k, v = cur.last()
+                    self.assertEqual((k, v), expected[-1])
+                
+                with txn.cursor() as cur:
                     vals = [(k,v) for k, v in cur.iter()]
                     self.assertEqual(vals, expected)
 
@@ -51,6 +57,20 @@ class MDBXIterTest(unittest.TestCase):
                     txn.commit()
             
             with env.ro_transaction() as txn:
+                with txn.cursor("test") as cur:
+                    k, v = cur.first()
+                    self.assertEqual((k, v), (expected[0][0], expected[0][1][0]))
+                    v = cur.first_dup()
+                    self.assertEqual(v, expected[0][1][0])
+                    v = cur.last_dup()
+                    self.assertEqual(v, expected[0][1][-1])
+                    k, v = cur.last()
+                    self.assertEqual((k, v), (expected[-1][0], expected[-1][1][-1]))
+                    v = cur.first_dup()
+                    self.assertEqual(v, expected[-1][1][0])
+                    v = cur.last_dup()
+                    self.assertEqual(v, expected[-1][1][-1])
+                
                 with txn.cursor("test") as cur:
                     vals = []
                     for row in cur.iter_dupsort_rows():

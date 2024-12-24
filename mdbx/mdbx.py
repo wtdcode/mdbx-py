@@ -2802,6 +2802,20 @@ class Cursor():
         self.copy(cursor)
         return cursor
 
+    def first(self) -> Tuple[Optional[bytes], Optional[bytes]]:
+        return self.get_full(None, MDBXCursorOp.MDBX_FIRST)
+        
+    def first_dup(self) -> Optional[bytes]:
+        _, v = self.get_full(None, MDBXCursorOp.MDBX_FIRST_DUP)
+        return v
+    
+    def last(self) -> Tuple[Optional[bytes], Optional[bytes]]:
+        return self.get_full(None, MDBXCursorOp.MDBX_LAST)
+    
+    def last_dup(self) -> Optional[bytes]:
+        _, v = self.get_full(None, MDBXCursorOp.MDBX_LAST_DUP)
+        return v
+    
     def get_full(self, key: Optional[bytes], cursor_op: MDBXCursorOp) -> Tuple[Optional[bytes], Optional[bytes]]:
         if self._cursor:
             io_key = Iovec(key)
@@ -2816,7 +2830,7 @@ class Cursor():
             out_key = io_key.to_bytes()
             out_value = io_data.to_bytes()
             return (out_key, out_value)
-
+ 
     def get(self, key: Optional[bytes], cursor_op: MDBXCursorOp = MDBXCursorOp.MDBX_FIRST) -> Optional[bytes]:
         """
         Wrapper around mdbx_cursor_get
