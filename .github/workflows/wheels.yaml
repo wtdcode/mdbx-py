@@ -28,10 +28,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: "recursive"
-      
-      - name: '🛠️ Setup Dependency'
-        if: contains(matrix.config.os, 'ubuntu')
-        run: sudo apt update && sudo apt install ninja-build -y
 
       - name: '🛠️ Win MSVC 64 setup'
         if: contains(matrix.config.os, 'windows')
@@ -59,7 +55,7 @@ jobs:
           CIBW_BUILD_FRONTEND: build # pip backend doesn't seem including our dynamic libraries
           CIBW_BUILD: ${{ matrix.config.cibw }}
           CIBW_ENVIRONMENT: SYSTEM_VERSION_COMPAT=0 # Shitty arm macOS
-          CIBW_BEFORE_BUILD_LINUX: cd libmdbx && git fetch --tags
+          CIBW_BEFORE_BUILD_LINUX: cd libmdbx && git fetch --tags && sudo apt update && sudo apt instan ninja-build -y
           CIBW_BEFORE_BUILD_WINDOWS: choco install ninja cmake git && cd libmdbx && git fetch --tags
           CIBW_BEFORE_BUILD_MACOS: brew install ninja cmake git && cd libmdbx && git fetch --tags
           CIBW_TEST_REQUIRES: pytest
@@ -137,7 +133,7 @@ jobs:
           CIBW_BUILD_FRONTEND: build # pip backend doesn't seem including our dynamic libraries
           CIBW_BUILD: ${{ matrix.config.cibw }}
           CIBW_ENVIRONMENT: SYSTEM_VERSION_COMPAT=0 # Shitty arm macOS
-          CIBW_BEFORE_BUILD_LINUX: cd libmdbx && git fetch --tags
+          CIBW_BEFORE_BUILD_LINUX: cd libmdbx && git fetch --tags && sudo apt update && sudo apt instan ninja-build -y
           CIBW_BEFORE_BUILD_WINDOWS: choco install ninja cmake git && cd libmdbx && git fetch --tags
           CIBW_BEFORE_BUILD_MACOS: brew install ninja cmake git && cd libmdbx && git fetch --tags
           CIBW_TEST_REQUIRES: pytest
