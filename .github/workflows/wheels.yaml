@@ -107,8 +107,8 @@ jobs:
           submodules: "recursive"
       
       - name: '🛠️ Setup Dependency'
-          if: contains(matrix.config.os, 'ubuntu')
-          run: sudo apt update && sudo apt install ninja-build -y
+        if: contains(matrix.config.os, 'ubuntu')
+        run: sudo apt update && sudo apt install ninja-build -y
 
       - name: '🛠️ Win MSVC 64 setup'
         if: contains(matrix.config.os, 'windows')
