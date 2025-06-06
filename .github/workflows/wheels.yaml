@@ -133,7 +133,7 @@ jobs:
           CIBW_BUILD_FRONTEND: build # pip backend doesn't seem including our dynamic libraries
           CIBW_BUILD: ${{ matrix.config.cibw }}
           CIBW_ENVIRONMENT: SYSTEM_VERSION_COMPAT=0 # Shitty arm macOS
-          CIBW_BEFORE_BUILD_LINUX: cd libmdbx && git fetch --tags && sudo apt update && sudo apt instan ninja-build -y
+          CIBW_BEFORE_BUILD_LINUX: cd libmdbx && git fetch --tags && yum install ninja-build -y
           CIBW_BEFORE_BUILD_WINDOWS: choco install ninja cmake git && cd libmdbx && git fetch --tags
           CIBW_BEFORE_BUILD_MACOS: brew install ninja cmake git && cd libmdbx && git fetch --tags
           CIBW_TEST_REQUIRES: pytest
@@ -158,7 +158,7 @@ jobs:
 
       - name: Build SDist
         run: |
-          sudo apt update && sudo apt install git build-essential -y
+          sudo apt update && sudo apt install ninja-build git build-essential -y
           cd libmdbx && make V=1 dist && cd ..
           python3 -m pip install -U pip build
           python3 -m build --sdist
