@@ -55,7 +55,7 @@ jobs:
       - name: Build wheels
         run: python -m cibuildwheel --output-dir wheelhouse
         env:
-          CMAKE_OSX_DEPLOYMENT_TARGET: "13.0"
+          MACOSX_DEPLOYMENT_TARGET: "13.0"
           CIBW_BUILD_FRONTEND: build # pip backend doesn't seem including our dynamic libraries
           CIBW_BUILD: ${{ matrix.config.cibw }}
           CIBW_ENVIRONMENT: SYSTEM_VERSION_COMPAT=0 # Shitty arm macOS
@@ -133,7 +133,7 @@ jobs:
       - name: Build wheels
         run: python -m cibuildwheel --output-dir wheelhouse
         env:
-          CMAKE_OSX_DEPLOYMENT_TARGET: "13.0"
+          MACOSX_DEPLOYMENT_TARGET: "13.0"
           CIBW_BUILD_FRONTEND: build # pip backend doesn't seem including our dynamic libraries
           CIBW_BUILD: ${{ matrix.config.cibw }}
           CIBW_ENVIRONMENT: SYSTEM_VERSION_COMPAT=0 # Shitty arm macOS
