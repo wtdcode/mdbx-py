@@ -154,12 +154,10 @@ jobs:
         with:
           submodules: "recursive"
       
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
       - name: Build SDist
         run: |
           sudo apt update && sudo apt install ninja-build git build-essential -y
-          cd libmdbx && make V=1 dist && cd ..
+          cd libmdbx && git fetch --tags && make V=1 dist && cd ..
           python3 -m pip install -U pip build
           python3 -m build --sdist
 
