@@ -34,7 +34,7 @@ def build(setup_kws: dict):
     
     # If there is already dist
     if not dist_folder.exists():
-        if sys.platform in ["linux", "linux2", "darwin"]:
+        if sys.platform in ["linux", "linux2"]:
             subprocess.check_call(["make", "dist"], cwd=libmdbx_source)
     
     if have_git() and (libmdbx_source / ".git").exists():
