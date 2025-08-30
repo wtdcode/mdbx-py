@@ -2529,6 +2529,21 @@ class DBI:
 
         return data.to_bytes()
 
+    def get_stat(self, txn: TXN) -> MDBXStat:
+        """
+        Thin wrapper around mdbx_dbi_stat
+
+        Raises MDBXErrorExc or OSError
+        :returns stats
+        :rtype MDBXStat
+        """
+        stats = MDBXStat()
+        ret = _lib.mdbx_dbi_stat(txn._txn, self._dbi,
+                                 ctypes.byref(stats), ctypes.sizeof(stats))
+        if ret != MDBXError.MDBX_SUCCESS.value:
+            raise make_exception(ret)
+        return stats
+
     def put(self, txn: TXN, key: bytes, value: bytes, flags: MDBXPutFlags = 0):
         """
         Thin wrapper around mdbx_put
