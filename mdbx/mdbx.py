@@ -2605,7 +2605,7 @@ class DBI:
         old_data = Iovec()
         key_iovec = Iovec(key)
         ret = _lib.mdbx_del(txn._txn, self._dbi, ctypes.byref(
-            key_iovec), ctypes.byref(key_iovec), Iovec(value) if value else None)
+            key_iovec), ctypes.byref(Iovec(value)) if value else None)
         if ret != MDBXError.MDBX_SUCCESS.value:
             raise make_exception(ret)
 

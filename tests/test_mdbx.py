@@ -161,6 +161,24 @@ class TestMdbx(unittest.TestCase):
         txn.commit()
         db.close()
 
+    def test_delete(self):
+        MDBX_TEST_DB_DIR="%s/%s" % (MDBX_TEST_DIR, inspect.stack()[0][3])
+        db=libmdbx.Env(MDBX_TEST_DB_DIR, maxdbs=1024)
+        txn=db.rw_transaction()
+        dbi=txn.create_map('multi', libmdbx.MDBXDBFlags.MDBX_DUPSORT)
+        dbi.put(txn, MDBX_TEST_KEY, MDBX_TEST_VAL_BINARY)
+        dbi.put(txn, MDBX_TEST_KEY, MDBX_TEST_VAL_UTF8)
+        txn.commit()
+
+        txn=db.rw_transaction()
+        dbi=txn.open_map('multi')
+        dbi.delete(txn, MDBX_TEST_KEY, MDBX_TEST_VAL_BINARY)
+        utf8 = dbi.get(txn, MDBX_TEST_KEY)
+        self.assertEqual(utf8, MDBX_TEST_VAL_UTF8)
+        dbi.delete(txn, MDBX_TEST_KEY)
+        txn.commit()
+        db.close()
+
     def test_env(self):
         """
         Test all env related methods, except reading and writing
