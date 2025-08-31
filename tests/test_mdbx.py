@@ -58,6 +58,7 @@ class TestMdbx(unittest.TestCase):
 
         dbi=txn.open_map()
         self.assertEqual(dbi.get(txn, MDBX_TEST_KEY), MDBX_TEST_VAL_BINARY)
+        self.assertEqual(dbi.get_stat(txn).ms_entries, 1)
         db.close()
 
     def test_db_readitem_writeitem(self):
