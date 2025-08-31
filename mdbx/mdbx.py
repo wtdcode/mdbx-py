@@ -1811,13 +1811,13 @@ class TXN:
             return True
         return False
 
-    def create_map(self, name: str = None, flags: MDBXDBFlags = MDBXDBFlags.MDBX_CREATE):
+    def create_map(self, name: str | bytes | None = None, flags: MDBXDBFlags = MDBXDBFlags.MDBX_CREATE):
         """
         Wrapper around mdbx_dbi_open, intended to create a database(map)
 
         Raises MDBXErrorExc or OSerror
         :param name: DBI name or None, if default DB is to be opened
-        :type name: str
+        :type name: str or bytes
         :param flags: Combination of MDBXDBFlags, passed to mdbx_dbi_open
         :type flags: Combination of MDBXDBFlags
         :returns: Reference to opened DBI DBI if success, or False in case TXN was invalid
@@ -1825,13 +1825,13 @@ class TXN:
         """
         return self.open_map(name, flags | MDBXDBFlags.MDBX_CREATE)
 
-    def open_map(self, name: str = None, flags: MDBXDBFlags = MDBXDBFlags.MDBX_DB_DEFAULTS):
+    def open_map(self, name: str | bytes | None = None, flags: MDBXDBFlags = MDBXDBFlags.MDBX_DB_DEFAULTS):
         """
         Wrapper around mdbx_dbi_open, intended to open an existing map
 
         Raises MDBXErrorExc or OSerror
         :param name: DBI name or None, if default DB is to be opened
-        :type name: str
+        :type name: str or bytes
         :param flags: Combination of MDBXDBFlags, passed to mdbx_dbi_open
         :type flags: Combination of MDBXDBFlags
         :returns: Reference to opened DBI DBI if success, or False in case TXN was invalid
@@ -2103,11 +2103,11 @@ class Env(object):
         """
         return self.__getitem__(key)
 
-    def set_default_db(self, name: str):
+    def set_default_db(self, name: str | bytes):
         """
         Sets the default DB to be used for __setitem__ and __getitem__
         :param name: name of the DBI
-        :type name: str
+        :type name: str or bytes
         """
         self._default_db = name
 
