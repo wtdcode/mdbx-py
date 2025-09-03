@@ -5,13 +5,14 @@ from pathlib import Path
 from mdbx import *
 import struct
 
+
 class MDBXIterTest(unittest.TestCase):
-    
+
     def setUp(self):
         self._folder = tempfile.TemporaryDirectory()
         self._folder_path = Path(self._folder.name)
         return super().setUp()
-    
+
     def test_iters(self):
         expected = []
         for i in range(10):
@@ -24,22 +25,22 @@ class MDBXIterTest(unittest.TestCase):
                     for k, v in expected:
                         dbi.put(txn, k, v)
                     txn.commit()
-            
+
             with env.ro_transaction() as txn:
                 with txn.cursor() as cur:
                     k, v = cur.first()
                     self.assertEqual((k, v), expected[0])
                     k, v = cur.last()
                     self.assertEqual((k, v), expected[-1])
-                
+
                 with txn.cursor() as cur:
-                    vals = [(k,v) for k, v in cur.iter()]
+                    vals = [(k, v) for k, v in cur.iter()]
                     self.assertEqual(vals, expected)
 
                 with txn.cursor() as cur:
                     vals = [(k, v) for k, v in cur.iter(start_key=struct.pack(">I", 4))]
                     self.assertEqual(vals, expected[3:])
-                    
+
     def test_iters_dup(self):
         expected = []
         for i in range(10):
@@ -55,7 +56,7 @@ class MDBXIterTest(unittest.TestCase):
                         for d in dups:
                             dbi.put(txn, k, d)
                     txn.commit()
-            
+
             with env.ro_transaction() as txn:
                 with txn.cursor("test") as cur:
                     k, v = cur.first()
@@ -70,7 +71,7 @@ class MDBXIterTest(unittest.TestCase):
                     self.assertEqual(v, expected[-1][1][0])
                     v = cur.last_dup()
                     self.assertEqual(v, expected[-1][1][-1])
-                
+
                 with txn.cursor("test") as cur:
                     vals = []
                     for row in cur.iter_dupsort_rows():
@@ -80,21 +81,24 @@ class MDBXIterTest(unittest.TestCase):
                                 row_vals[k] = []
                             row_vals[k].append(v)
                         self.assertEqual(len(row_vals), 1)
-                        vals.append((
-                            list(row_vals.keys())[0],
-                            tuple(list(row_vals.values())[0])
-                        ))
+                        vals.append(
+                            (
+                                list(row_vals.keys())[0],
+                                tuple(list(row_vals.values())[0]),
+                            )
+                        )
                     self.assertEqual(vals, expected)
 
                 with txn.cursor("test") as cur:
                     vals = [(k, v) for k, v in cur.iter_dupsort()]
-                    expected = [ (x, dup) for x, dups in expected for dup in dups]
+                    expected = [(x, dup) for x, dups in expected for dup in dups]
                     self.assertEqual(vals, expected)
-                    
+
     def tearDown(self):
         del self._folder
         shutil.rmtree(self._folder_path, ignore_errors=True)
         return super().tearDown()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()
