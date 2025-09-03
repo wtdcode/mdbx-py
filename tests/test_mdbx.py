@@ -18,8 +18,6 @@ import random
 import unittest
 import os
 import string
-import threading
-import time
 import tempfile
 import mdbx
 import logging
@@ -45,7 +43,7 @@ class TestMdbx(unittest.TestCase):
 
     def test_open(self):
         MDBX_TEST_DB_DIR = "%s/%s" % (MDBX_TEST_DIR, inspect.stack()[0][3])
-        db = mdbx.Env(MDBX_TEST_DB_DIR, maxdbs=1)
+        _db = mdbx.Env(MDBX_TEST_DB_DIR, maxdbs=1)
 
     def test_write(self):
         MDBX_TEST_DB_DIR = "%s/%s" % (MDBX_TEST_DIR, inspect.stack()[0][3])
@@ -298,6 +296,8 @@ class TestMdbx(unittest.TestCase):
         txn.renew()
 
     # def test_hsr(self):
+    #   import threading
+    #   import time
     #   # Need to think this all over first before a situation can be caused when the HSR function would be called
     #   # can not test reasonably for equality of returned function ptr of get_hsr and set_hsr because
     #   # the objects can not be compared for equality and the function pointer is not accessible
