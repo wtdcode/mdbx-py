@@ -2,7 +2,7 @@ import unittest
 import tempfile
 import shutil
 from pathlib import Path
-from mdbx import *
+from mdbx import Env, MDBXDBFlags
 import struct
 
 
