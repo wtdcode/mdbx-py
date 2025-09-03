@@ -21,7 +21,7 @@ import string
 import threading
 import time
 import tempfile
-import mdbx as libmdbx
+import mdbx
 import logging
 
 
@@ -45,11 +45,11 @@ class TestMdbx(unittest.TestCase):
 
     def test_open(self):
         MDBX_TEST_DB_DIR = "%s/%s" % (MDBX_TEST_DIR, inspect.stack()[0][3])
-        db = libmdbx.Env(MDBX_TEST_DB_DIR, maxdbs=1)
+        db = mdbx.Env(MDBX_TEST_DB_DIR, maxdbs=1)
 
     def test_write(self):
         MDBX_TEST_DB_DIR = "%s/%s" % (MDBX_TEST_DIR, inspect.stack()[0][3])
-        db = libmdbx.Env(MDBX_TEST_DB_DIR, maxdbs=1)
+        db = mdbx.Env(MDBX_TEST_DB_DIR, maxdbs=1)
         txn = db.start_transaction()
         dbi = txn.open_map()
         dbi.put(txn, MDBX_TEST_KEY, MDBX_TEST_VAL_BINARY)
@@ -66,14 +66,14 @@ class TestMdbx(unittest.TestCase):
 
     def test_db_readitem_writeitem(self):
         MDBX_TEST_DB_DIR = "%s/%s" % (MDBX_TEST_DIR, inspect.stack()[0][3])
-        db = libmdbx.Env(MDBX_TEST_DB_DIR, maxdbs=1)
+        db = mdbx.Env(MDBX_TEST_DB_DIR, maxdbs=1)
         db[MDBX_TEST_KEY] = MDBX_TEST_VAL_UTF8
         self.assertEqual(db[MDBX_TEST_KEY], MDBX_TEST_VAL_UTF8)
         db.close()
 
     def test_db_iter(self):
         MDBX_TEST_DB_DIR = "%s/%s" % (MDBX_TEST_DIR, inspect.stack()[0][3])
-        db = libmdbx.Env(MDBX_TEST_DB_DIR, maxdbs=1024)
+        db = mdbx.Env(MDBX_TEST_DB_DIR, maxdbs=1024)
         db_pairs = {}
         txn = db.start_transaction()
         for i in range(15):
@@ -91,8 +91,8 @@ class TestMdbx(unittest.TestCase):
         del dbi
         del db
         # read all keys and compare
-        db = libmdbx.Env(MDBX_TEST_DB_DIR, maxdbs=1024)
-        txn = db.start_transaction(flags=libmdbx.MDBXTXNFlags.MDBX_TXN_RDONLY)
+        db = mdbx.Env(MDBX_TEST_DB_DIR, maxdbs=1024)
+        txn = db.start_transaction(flags=mdbx.MDBXTXNFlags.MDBX_TXN_RDONLY)
         for db_name, pairs in db_pairs.items():
             dbi = txn.open_map(db_name)
             for key, val in pairs:
@@ -101,7 +101,7 @@ class TestMdbx(unittest.TestCase):
 
     def test_success_close_written_map(self):
         MDBX_TEST_DB_DIR = "%s/%s" % (MDBX_TEST_DIR, inspect.stack()[0][3])
-        db = libmdbx.Env(MDBX_TEST_DB_DIR, maxdbs=1024)
+        db = mdbx.Env(MDBX_TEST_DB_DIR, maxdbs=1024)
         txn = db.start_transaction()
         opened_map = txn.create_map(MDBX_TEST_DB_NAME)
         opened_map.put(txn, MDBX_TEST_KEY, MDBX_TEST_VAL_UTF8)
@@ -111,8 +111,8 @@ class TestMdbx(unittest.TestCase):
 
     def test_multi_write(self):
         MDBX_TEST_DB_DIR = "%s/%s" % (MDBX_TEST_DIR, inspect.stack()[0][3])
-        geo = libmdbx.Geometry(-1, -1, 2147483648, -1, -1, -1)
-        db = libmdbx.Env(MDBX_TEST_DB_DIR, maxdbs=1024, geometry=geo)
+        geo = mdbx.Geometry(-1, -1, 2147483648, -1, -1, -1)
+        db = mdbx.Env(MDBX_TEST_DB_DIR, maxdbs=1024, geometry=geo)
         generated_db_names = {}
         for i in range(16):
             name = id_generator().encode("utf-8")
@@ -133,8 +133,8 @@ class TestMdbx(unittest.TestCase):
         txn.commit()
         db.close()
 
-        db = libmdbx.Env(MDBX_TEST_DB_DIR, maxdbs=1024)
-        txn = db.start_transaction(libmdbx.MDBXTXNFlags.MDBX_TXN_RDONLY)
+        db = mdbx.Env(MDBX_TEST_DB_DIR, maxdbs=1024)
+        txn = db.start_transaction(mdbx.MDBXTXNFlags.MDBX_TXN_RDONLY)
         for name in generated_db_names:
             ref = generated_db_names[name]
             dbi = txn.open_map(name)
@@ -146,7 +146,7 @@ class TestMdbx(unittest.TestCase):
 
     def test_replace(self):
         MDBX_TEST_DB_DIR = "%s/%s" % (MDBX_TEST_DIR, inspect.stack()[0][3])
-        db = libmdbx.Env(MDBX_TEST_DB_DIR, maxdbs=1024)
+        db = mdbx.Env(MDBX_TEST_DB_DIR, maxdbs=1024)
         txn = db.start_transaction()
         dbi = txn.open_map()
         dbi.put(txn, MDBX_TEST_KEY, MDBX_TEST_VAL_BINARY)
@@ -167,9 +167,9 @@ class TestMdbx(unittest.TestCase):
 
     def test_delete(self):
         MDBX_TEST_DB_DIR = "%s/%s" % (MDBX_TEST_DIR, inspect.stack()[0][3])
-        db = libmdbx.Env(MDBX_TEST_DB_DIR, maxdbs=1024)
+        db = mdbx.Env(MDBX_TEST_DB_DIR, maxdbs=1024)
         txn = db.rw_transaction()
-        dbi = txn.create_map("multi", libmdbx.MDBXDBFlags.MDBX_DUPSORT)
+        dbi = txn.create_map("multi", mdbx.MDBXDBFlags.MDBX_DUPSORT)
         dbi.put(txn, MDBX_TEST_KEY, MDBX_TEST_VAL_BINARY)
         dbi.put(txn, MDBX_TEST_KEY, MDBX_TEST_VAL_UTF8)
         txn.commit()
@@ -189,18 +189,18 @@ class TestMdbx(unittest.TestCase):
         """
 
         MDBX_TEST_DB_DIR = "%s/%s" % (MDBX_TEST_DIR, inspect.stack()[0][3])
-        env = libmdbx.Env(MDBX_TEST_DB_DIR, maxdbs=1)
+        env = mdbx.Env(MDBX_TEST_DB_DIR, maxdbs=1)
         env.register_thread()
         txn = env.start_transaction()
         stats = env.get_stat(txn)
-        self.assertIsInstance(stats, libmdbx.MDBXStat)
+        self.assertIsInstance(stats, mdbx.MDBXStat)
         self.assertTrue(str(stats))
         envinfo = env.get_info(txn)
-        self.assertIsInstance(envinfo, libmdbx.MDBXEnvinfo)
+        self.assertIsInstance(envinfo, mdbx.MDBXEnvinfo)
         self.assertTrue(str(envinfo))
 
         ret_env = txn.get_env()
-        self.assertIsInstance(ret_env, libmdbx.Env)
+        self.assertIsInstance(ret_env, mdbx.Env)
 
         dbi = txn.open_map()
         dbi.put(txn, MDBX_TEST_KEY, MDBX_TEST_VAL_UTF8)
@@ -211,8 +211,8 @@ class TestMdbx(unittest.TestCase):
             with open(path, "w") as fd:
                 env.copy2fd(
                     fd,
-                    libmdbx.MDBXCopyMode.MDBX_CP_DEFAULTS
-                    | libmdbx.MDBXCopyMode.MDBX_CP_FORCE_DYNAMIC_SIZE,
+                    mdbx.MDBXCopyMode.MDBX_CP_DEFAULTS
+                    | mdbx.MDBXCopyMode.MDBX_CP_FORCE_DYNAMIC_SIZE,
                 )
 
             self.assertTrue(os.path.exists(path))
@@ -226,7 +226,7 @@ class TestMdbx(unittest.TestCase):
 
         env.close()
 
-        env = libmdbx.Env(MDBX_TEST_DB_DIR, maxdbs=1)
+        env = mdbx.Env(MDBX_TEST_DB_DIR, maxdbs=1)
         txn = env.start_transaction()
         dbi = txn.open_map()
         if sys.platform != "win32":
@@ -242,9 +242,9 @@ class TestMdbx(unittest.TestCase):
         env.get_maxkeysize()
         env.get_maxvalsize()
 
-        env.set_option(libmdbx.MDBXOption.MDBX_opt_txn_dp_initial, 2048)
+        env.set_option(mdbx.MDBXOption.MDBX_opt_txn_dp_initial, 2048)
         self.assertEqual(
-            env.get_option(libmdbx.MDBXOption.MDBX_opt_txn_dp_initial), 2048
+            env.get_option(mdbx.MDBXOption.MDBX_opt_txn_dp_initial), 2048
         )
 
         env.get_fd()
@@ -255,7 +255,7 @@ class TestMdbx(unittest.TestCase):
 
     def test_userctx(self):
         MDBX_TEST_DB_DIR = "%s/%s" % (MDBX_TEST_DIR, inspect.stack()[0][3])
-        env = libmdbx.Env(MDBX_TEST_DB_DIR, maxdbs=1)
+        env = mdbx.Env(MDBX_TEST_DB_DIR, maxdbs=1)
 
         test_obj = {"foo": "bar"}
         env.set_user_ctx(test_obj)
@@ -290,8 +290,8 @@ class TestMdbx(unittest.TestCase):
 
     def test_txn(self):
         MDBX_TEST_DB_DIR = "%s/%s" % (MDBX_TEST_DIR, inspect.stack()[0][3])
-        env = libmdbx.Env(MDBX_TEST_DB_DIR, maxdbs=1)
-        txn = env.start_transaction(libmdbx.MDBXTXNFlags.MDBX_TXN_RDONLY)
+        env = mdbx.Env(MDBX_TEST_DB_DIR, maxdbs=1)
+        txn = env.start_transaction(mdbx.MDBXTXNFlags.MDBX_TXN_RDONLY)
 
         txn.reset()
 
@@ -303,7 +303,7 @@ class TestMdbx(unittest.TestCase):
     #   # the objects can not be compared for equality and the function pointer is not accessible
     #   # Also, this test currently doesn't do anything useful
     #   return
-    #   def hsr_func(env: ctypes.POINTER(libmdbx.MDBXEnv), txn: ctypes.POINTER(libmdbx.MDBXTXN), pid: ctypes.c_int, tid: ctypes.c_int, laggard: ctypes.c_uint64, gap: ctypes.c_uint, space: ctypes.c_size_t, retry: ctypes.c_int) -> ctypes.c_int:
+    #   def hsr_func(env: ctypes.POINTER(mdbx.MDBXEnv), txn: ctypes.POINTER(mdbx.MDBXTXN), pid: ctypes.c_int, tid: ctypes.c_int, laggard: ctypes.c_uint64, gap: ctypes.c_uint, space: ctypes.c_size_t, retry: ctypes.c_int) -> ctypes.c_int:
     #       print("hsr_func called")
     #       shared.append({"pid" : pid, "tid" : tid, "laggard" : laggard, "gap" : gap, "space" : space, "retry" : retry })
     #       with condition:
@@ -311,16 +311,16 @@ class TestMdbx(unittest.TestCase):
 
     #   def stall(**kw_args):
     #       # This function needs to
-    #       env=libmdbx.Env(kw_args["env_name"], maxdbs=1)
-    #       txn=env.start_transaction(libmdbx.MDBXTXNFlags.MDBX_TXN_RDONLY)
+    #       env=mdbx.Env(kw_args["env_name"], maxdbs=1)
+    #       txn=env.start_transaction(mdbx.MDBXTXNFlags.MDBX_TXN_RDONLY)
     #       time.sleep(5)
     #       txn.abort()
 
     #   MDBX_TEST_DB_DIR="%s/%s" % (MDBX_TEST_DIR, inspect.stack()[0][3])
     #   # Set low space limit and write it until it's full, then start read transaction and a second write transaction,
 
-    #   env=libmdbx.Env(MDBX_TEST_DB_DIR, maxdbs=1)
-    #   env.set_hsr(libmdbx._lib.MDBX_hsr_func(hsr_func))
+    #   env=mdbx.Env(MDBX_TEST_DB_DIR, maxdbs=1)
+    #   env.set_hsr(mdbx._lib.MDBX_hsr_func(hsr_func))
 
     #   shared = []
     #   condition=threading.Condition()
@@ -337,28 +337,28 @@ class TestMdbx(unittest.TestCase):
     # #   def rls_func()
 
     def test_get_build_info(self):
-        libmdbx.get_build_info()
+        mdbx.get_build_info()
 
     def test_get_version_info(self):
-        libmdbx.get_version_info()
+        mdbx.get_version_info()
 
     def test_get_sysram(self):
         try:
-            libmdbx._lib.mdbx_get_sysraminfo
-        except:
+            mdbx._lib.mdbx_get_sysraminfo
+        except Exception:
             return True
         a = ctypes.c_int()
         b = ctypes.c_int()
         c = ctypes.c_int()
         self.assertFalse(
-            libmdbx._lib.mdbx_get_sysraminfo(
+            mdbx._lib.mdbx_get_sysraminfo(
                 ctypes.byref(a), ctypes.byref(b), ctypes.byref(c)
             )
         )
 
     def test_txnid(self):
         MDBX_TEST_DB_DIR = "%s/%s" % (MDBX_TEST_DIR, inspect.stack()[0][3])
-        env = libmdbx.Env(MDBX_TEST_DB_DIR, maxdbs=1)
+        env = mdbx.Env(MDBX_TEST_DB_DIR, maxdbs=1)
 
         txn = env.start_transaction()
         self.assertTrue(txn.id())
@@ -367,13 +367,13 @@ class TestMdbx(unittest.TestCase):
         return
         # Haven't succeeded in making this work
         # MDBX_TEST_DB_DIR="%s/%s" % (MDBX_TEST_DIR, inspect.stack()[0][3])
-        # env=libmdbx.Env(MDBX_TEST_DB_DIR, maxdbs=1)
+        # env=mdbx.Env(MDBX_TEST_DB_DIR, maxdbs=1)
 
         # txn=env.start_transaction()
 
         # dbi=txn.open_map()
 
-        # cursor=libmdbx.Cursor()
+        # cursor=mdbx.Cursor()
         # cursor.bind(txn, dbi)
         # cursor.put(MDBX_TEST_KEY, MDBX_TEST_VAL_UTF8)
         # self.assertEqual(MDBX_TEST_VAL_UTF8, cursor.get(MDBX_TEST_KEY))
@@ -386,18 +386,18 @@ class TestMdbx(unittest.TestCase):
         MDBX_TEST_DB_DIR = "%s/%s" % (MDBX_TEST_DIR, inspect.stack()[0][3])
         a = "abc".encode("utf-8")
         b = "def".encode("utf-8")
-        env = libmdbx.Env(MDBX_TEST_DB_DIR, maxdbs=2)
+        env = mdbx.Env(MDBX_TEST_DB_DIR, maxdbs=2)
 
         txn = env.start_transaction()
 
-        dbi = txn.open_map(MDBX_TEST_DB_NAME, flags=libmdbx.MDBXDBFlags.MDBX_CREATE)
+        dbi = txn.open_map(MDBX_TEST_DB_NAME, flags=mdbx.MDBXDBFlags.MDBX_CREATE)
 
-        cursor = libmdbx.Cursor(dbi, txn)
+        cursor = mdbx.Cursor(dbi, txn)
 
         cursor.put(MDBX_TEST_KEY, MDBX_TEST_VAL_UTF8)
         self.assertEqual(MDBX_TEST_VAL_UTF8, cursor.get(MDBX_TEST_KEY))
-        # with self.assertRaises(libmdbx.MDBXErrorExc):
-        cursor.get(MDBX_TEST_KEY, libmdbx.MDBXCursorOp.MDBX_FIRST)
+        # with self.assertRaises(mdbx.MDBXErrorExc):
+        cursor.get(MDBX_TEST_KEY, mdbx.MDBXCursorOp.MDBX_FIRST)
 
         cursor.get(a)
         cursor.put(a, b)
@@ -407,21 +407,21 @@ class TestMdbx(unittest.TestCase):
             f"Status, txn={txn._txn}, cursor={cursor._cursor}, dbi={dbi._dbi}"
         )
         txn = env.start_transaction()
-        logging.getLogger("mdbx").debug(f"New dbi")
+        logging.getLogger("mdbx").debug(f"New dbi, dbi = {dbi._dbi}")
         dbi = txn.open_map(MDBX_TEST_DB_NAME)
         logging.getLogger("mdbx").debug(f"New Cursor, dbi = {dbi._dbi}")
-        cursor = libmdbx.Cursor(dbi, txn)
+        cursor = mdbx.Cursor(dbi, txn)
         self.assertEqual(MDBX_TEST_VAL_UTF8, dbi.get(txn, MDBX_TEST_KEY))
-        self.assertEqual(b, cursor.get(a, cursor_op=libmdbx.MDBXCursorOp.MDBX_SET))
+        self.assertEqual(b, cursor.get(a, cursor_op=mdbx.MDBXCursorOp.MDBX_SET))
 
-        cursor.get(MDBX_TEST_KEY, libmdbx.MDBXCursorOp.MDBX_NEXT)
+        cursor.get(MDBX_TEST_KEY, mdbx.MDBXCursorOp.MDBX_NEXT)
 
-        cursor.get(MDBX_TEST_KEY, libmdbx.MDBXCursorOp.MDBX_NEXT)
+        cursor.get(MDBX_TEST_KEY, mdbx.MDBXCursorOp.MDBX_NEXT)
         self.assertTrue(cursor.eof())
-        cursor.get(MDBX_TEST_KEY, libmdbx.MDBXCursorOp.MDBX_FIRST)
+        cursor.get(MDBX_TEST_KEY, mdbx.MDBXCursorOp.MDBX_FIRST)
         self.assertTrue(cursor.on_first())
         self.assertFalse(cursor.on_last())
-        cursor.get(MDBX_TEST_KEY, libmdbx.MDBXCursorOp.MDBX_LAST)
+        cursor.get(MDBX_TEST_KEY, mdbx.MDBXCursorOp.MDBX_LAST)
         self.assertTrue(cursor.on_last())
         self.assertFalse(cursor.on_first())
         cursor.delete()
