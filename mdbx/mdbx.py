@@ -2752,20 +2752,20 @@ class Cursor:
         self._txn = txn
         self._ctx: Optional[Any] = ctx
         self._started = False
-        self._cursor = ctypes.POINTER(MDBXCursor)()
+        self._cursor: Optional[_Pointer[MDBXCursor]] = None
         ret = None
         if db and txn:
-            ret = _lib.mdbx_cursor_open(txn._txn, db._dbi, ctypes.pointer(self._cursor))
-        if ret and ret != MDBXError.MDBX_SUCCESS.value:
-            raise make_exception(ret)
+            cursor_ptr = ctypes.POINTER(MDBXCursor)()
+            ret = _lib.mdbx_cursor_open(txn._txn, db._dbi, ctypes.byref(cursor_ptr))
+            if ret != MDBXError.MDBX_SUCCESS.value:
+                raise make_exception(ret)
+            self._cursor = cursor_ptr
+
         else:
-            if not ctypes.cast(self._cursor, ctypes.c_void_p):
-                raise ValueError(
-                    f"The returned cursor pointer {self._cursor} is invalid?!"
-                )
-            self._cursor.value = _lib.mdbx_cursor_create(ctypes.c_void_p())
-            if not self._cursor.value:
-                raise MemoryError()
+            self._cursor = _lib.mdbx_cursor_create(ctx)
+            if not self._cursor:
+                raise MemoryError("mdbx_cursor_create failed")
+
         if txn:
             txn._dependents.append(weakref.ref(self))
 
