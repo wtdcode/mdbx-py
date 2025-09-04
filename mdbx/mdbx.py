@@ -2718,7 +2718,6 @@ class DBI:
         :param value: The value to delete
         :type value: bytes
         """
-        old_data = Iovec()
         key_iovec = Iovec(key)
         ret = _lib.mdbx_del(
             txn._txn,
