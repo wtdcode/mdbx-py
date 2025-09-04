@@ -1906,7 +1906,7 @@ class TXN:
         """
         info = MDBXTXNInfo()
         if self._txn:
-            ret = _lib.mdbx_txn_info(self._txn, ctypes.c_void_p(info), scan_rlt)
+            ret = _lib.mdbx_txn_info(self._txn, ctypes.byref(info), scan_rlt)
             if ret != MDBXError.MDBX_SUCCESS.value:
                 raise make_exception(ret)
             return info
@@ -3241,7 +3241,7 @@ _lib.mdbx_txn_begin_ex.argtypes = [
 _lib.mdbx_txn_begin_ex.restype = ctypes.c_int
 _lib.mdbx_txn_info.argtypes = [
     ctypes.POINTER(MDBXTXN),
-    ctypes.POINTER(MDBXEnvinfo),
+    ctypes.POINTER(MDBXTXNInfo),
     ctypes.c_bool,
 ]
 _lib.mdbx_txn_info.restype = ctypes.c_int

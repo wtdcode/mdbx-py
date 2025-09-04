@@ -295,6 +295,8 @@ class TestMdbx(unittest.TestCase):
 
         txn.renew()
 
+        self.assertEqual(txn.get_info().txn_id, 3) # Maybe this is a bit too naive
+
     # def test_hsr(self):
     #   import threading
     #   import time
