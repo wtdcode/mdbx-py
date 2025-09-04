@@ -1939,14 +1939,15 @@ class TXN:
         Creata a cursor on a database. If the argument is str and current transaction is a read-write
         transaction, the database will be created.
         """
+        dbi: DBI | None
         if isinstance(db, str):
             if self._flags.is_read_only():
-                db = self.open_map(db)
+                dbi = self.open_map(db)
             else:
-                db = self.create_map(db)
+                dbi = self.create_map(db)
         elif db is None:
-            db = self.open_map(db)
-        return Cursor(db, self, self._ctx)
+            dbi = self.open_map(db)
+        return Cursor(dbi, self, self._ctx)
 
 
 @dataclasses.dataclass
