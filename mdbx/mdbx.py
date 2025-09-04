@@ -2001,7 +2001,7 @@ class Env(object):
     ):
         self._env = ctypes.pointer(MDBXEnv())
         ret = _lib.mdbx_env_create(ctypes.byref(self._env))
-        self._default_db = None
+        self._default_db: str | bytes | None = None
         self._current_txn = None
         self._dependents: List[ReferenceType[TXN] | ReferenceType[DBI]] = []
         self._ctx: Optional[Any] = None
@@ -2152,7 +2152,7 @@ class Env(object):
         """
         return self.__getitem__(key)
 
-    def set_default_db(self, name: str | bytes):
+    def set_default_db(self, name: str | bytes | None):
         """
         Sets the default DB to be used for __setitem__ and __getitem__
         :param name: name of the DBI
