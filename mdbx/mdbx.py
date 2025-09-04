@@ -2875,7 +2875,7 @@ class Cursor:
         if self._cursor:
             return _lib.mdbx_cursor_dbi(self._cursor)
 
-    def copy(self, dest: Cursor):
+    def copy(self, dest: Cursor) -> Cursor:
         """
         Thin wrapper around mdbx_cursor_copy
         Copies this cursor's state to the given Cursor
@@ -2888,6 +2888,8 @@ class Cursor:
             ret = _lib.mdbx_cursor_copy(self._cursor, dest._cursor)
             if ret != MDBXError.MDBX_SUCCESS.value:
                 raise make_exception(ret)
+            return dest
+        raise RuntimeError("Cursor is not available")
 
     def dup(self) -> Cursor:
         cursor = Cursor(self._db, self._txn, self._ctx)
