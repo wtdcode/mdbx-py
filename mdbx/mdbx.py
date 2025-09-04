@@ -1609,7 +1609,7 @@ class TXN:
     """
 
     def __init__(
-        self, env: Env, parent: Optional[TXN] = None, flags: MDBXTXNFlags = 0, ctx: Optional[Any] = None
+        self, env: Env, parent: Optional[TXN] = None, flags: MDBXTXNFlags = MDBXTXNFlags.MDBX_TXN_READWRITE, ctx: Optional[Any] = None
     ):
         """
 
@@ -2161,7 +2161,7 @@ class Env(object):
     def rw_transaction(self) -> TXN:
         return self.start_transaction(MDBXTXNFlags.MDBX_TXN_READWRITE, None)
 
-    def start_transaction(self, flags: MDBXTXNFlags = 0, parent_txn: Optional[TXN] = None):
+    def start_transaction(self, flags: MDBXTXNFlags = MDBXTXNFlags.MDBX_TXN_READWRITE, parent_txn: Optional[TXN] = None):
         """
         Starts a transaction on the given Env
 
