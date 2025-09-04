@@ -2597,7 +2597,7 @@ class DBI:
             raise make_exception(ret)
         return stats
 
-    def put(self, txn: TXN, key: bytes, value: bytes, flags: MDBXPutFlags = 0):
+    def put(self, txn: TXN, key: bytes, value: bytes, flags: MDBXPutFlags = MDBXPutFlags.MDBX_UPSERT):
         """
         Thin wrapper around mdbx_put
 
@@ -2638,7 +2638,7 @@ class DBI:
         if ret != MDBXError.MDBX_SUCCESS.value:
             raise make_exception(ret)
 
-    def replace(self, txn: TXN, key: bytes, new_data: bytes, flags: MDBXPutFlags = 0):
+    def replace(self, txn: TXN, key: bytes, new_data: bytes, flags: MDBXPutFlags = MDBXPutFlags.MDBX_UPSERT):
         """
         Thin wrapper around mdbx_replace
 
@@ -3400,10 +3400,10 @@ _lib.mdbx_cursor_put.argtypes = [
     ctypes.POINTER(MDBXCursor),
     ctypes.POINTER(Iovec),
     ctypes.POINTER(Iovec),
-    MDBXPutFlags,
+    ctypes.c_uint,
 ]
 _lib.mdbx_cursor_put.restype = ctypes.c_int
-_lib.mdbx_cursor_del.argtypes = [ctypes.POINTER(MDBXCursor), MDBXPutFlags]
+_lib.mdbx_cursor_del.argtypes = [ctypes.POINTER(MDBXCursor), ctypes.c_uint]
 _lib.mdbx_cursor_del.restype = ctypes.c_int
 _lib.mdbx_cursor_count.argtypes = [
     ctypes.POINTER(MDBXCursor),
@@ -3426,7 +3426,7 @@ try:
         ctypes.POINTER(Iovec),
         ctypes.POINTER(Iovec),
         MDBXAttr,
-        MDBXPutFlags,
+        ctypes.c_uint,
     ]
     _lib.mdbx_cursor_put_attr.restype = ctypes.c_int
 except:
@@ -3439,7 +3439,7 @@ try:
         ctypes.POINTER(Iovec),
         ctypes.POINTER(Iovec),
         MDBXAttr,
-        MDBXPutFlags,
+        ctypes.c_uint,
     ]
     _lib.mdbx_put_attr.restype = ctypes.c_int
 except:
