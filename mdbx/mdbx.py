@@ -2063,7 +2063,7 @@ class Env(object):
             val = db.get(txn, key)
             txn.abort()
             return val
-        except Exception as e:
+        except Exception as _e:
             return None
 
     def __setitem__(self, key: str | bytes, val: str | bytes):
@@ -3468,7 +3468,7 @@ try:
         ctypes.c_uint,
     ]
     _lib.mdbx_cursor_put_attr.restype = ctypes.c_int
-except:
+except:  # noqa: E722
     pass
 
 try:
@@ -3481,7 +3481,7 @@ try:
         ctypes.c_uint,
     ]
     _lib.mdbx_put_attr.restype = ctypes.c_int
-except:
+except:  # noqa: E722
     pass
 
 try:
@@ -3493,7 +3493,7 @@ try:
         MDBXAttr,
     ]
     _lib.mdbx_set_attr.restype = ctypes.c_int
-except:
+except:  # noqa: E722
     pass
 
 try:
@@ -3505,7 +3505,7 @@ try:
         ctypes.c_uint,
     ]
     _lib.mdbx_cursor_get_attr.restype = ctypes.c_int
-except:
+except:  # noqa: E722
     pass
 
 try:
@@ -3517,7 +3517,7 @@ try:
         ctypes.POINTER(MDBXAttr),
     ]
     _lib.mdbx_get_attr.restype = ctypes.c_int
-except:
+except:  # noqa: E722
     pass
 
 MDBX_hsr_func = ctypes.CFUNCTYPE(
@@ -3581,7 +3581,7 @@ try:
         ctypes.POINTER(ctypes.c_int),
     ]
     _lib.mdbx_get_sysraminfo.restype = ctypes.c_int
-except:
+except:  # noqa: E722
     pass
 
 _lib.mdbx_is_dirty.argtypes = [ctypes.POINTER(MDBXTXN), ctypes.c_void_p]
