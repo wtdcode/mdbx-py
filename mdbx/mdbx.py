@@ -3368,7 +3368,7 @@ _lib.mdbx_cursor_get.argtypes = [
     ctypes.POINTER(MDBXCursor),
     ctypes.POINTER(Iovec),
     ctypes.POINTER(Iovec),
-    MDBXCursorOp,
+    ctypes.c_uint,
 ]
 _lib.mdbx_cursor_get.restype = ctypes.c_int
 _lib.mdbx_cursor_set_userctx.argtypes = [ctypes.POINTER(MDBXCursor), ctypes.c_void_p]
@@ -3463,7 +3463,7 @@ try:
         ctypes.POINTER(Iovec),
         ctypes.POINTER(Iovec),
         ctypes.POINTER(MDBXAttr),
-        MDBXCursorOp,
+        ctypes.c_uint,
     ]
     _lib.mdbx_cursor_get_attr.restype = ctypes.c_int
 except:
