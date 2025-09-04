@@ -1910,7 +1910,7 @@ class TXN:
             if ret != MDBXError.MDBX_SUCCESS.value:
                 raise make_exception(ret)
             return info
-        return None
+        raise RuntimeError("TXN is not available")
 
     def get_canary(self) -> MDBXCanary:
         """
