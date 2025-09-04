@@ -1014,16 +1014,6 @@ class MDBXError(enum.IntFlag):
     MDBX_EREMOTE = 15  # Win32 doesn't have this
 
 
-class MDBXMode(enum.IntEnum):
-
-    def from_param(self):
-        return int(self)
-
-    readonly = 0
-    write_file_io = 1
-    write_mapped_io = 2
-
-
 class MDBXOption(enum.IntEnum):
 
     def from_param(self):
@@ -1979,7 +1969,7 @@ class Env(object):
     :param flags: Combination of MDBXEnvFlags
     :type flags: MDBXEnvFlags
     :param mode: Access mode for the environment directory
-    :type mode: MDBXMode
+    :type mode: int
     :param geometry: Geometry of the database, entirely optional
     :type geometry: Geometry
     :param maxreaders: Maxreaders to be set, defaults to 1
@@ -1993,7 +1983,7 @@ class Env(object):
         self,
         path: str,
         flags: MDBXEnvFlags = MDBXEnvFlags.MDBX_ENV_DEFAULTS,
-        mode: MDBXMode = 0o755,
+        mode: int = 0o755,
         geometry: Optional[Geometry] = None,
         maxreaders: int = 1,
         maxdbs: int = 1,
