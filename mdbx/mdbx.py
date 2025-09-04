@@ -1609,7 +1609,7 @@ class TXN:
     """
 
     def __init__(
-        self, env: Env, parent: Optional[TXN] = None, flags: MDBXTXNFlags = 0, context=None
+        self, env: Env, parent: Optional[TXN] = None, flags: MDBXTXNFlags = 0, ctx: Optional[Any] = None
     ):
         """
 
@@ -1625,12 +1625,12 @@ class TXN:
         """
         self._txn = ctypes.POINTER(MDBXTXN)()
         self._env = env
-        self._ctx = None
+        self._ctx: Optional[Any] = ctx
         self._flags = flags
         self._dependents: List[ReferenceType[Cursor]] = []
         env._dependents.append(weakref.ref(self))
         ret = _lib.mdbx_txn_begin_ex(
-            env._env, parent, flags, ctypes.pointer(self._txn), context
+            env._env, parent, flags, ctypes.pointer(self._txn), self._ctx
         )
         if ret != MDBXError.MDBX_SUCCESS.value:
             raise make_exception(ret)
@@ -1723,7 +1723,7 @@ class TXN:
         """
         return self._env
 
-    def set_user_ctx(self, ctx):
+    def set_user_ctx(self, ctx: Any) -> None:
         """
         Sets the user context of the TXN
 
@@ -1734,7 +1734,7 @@ class TXN:
         """
         self._ctx = ctx
 
-    def set_user_ctx_int(self, ctx):
+    def set_user_ctx_int(self, ctx: ctypes.c_void_p):
         """
         Thin wrapper around mdbx_txn_set_userctx
 
@@ -1753,7 +1753,7 @@ class TXN:
             return True
         return False
 
-    def get_user_ctx(self):
+    def get_user_ctx(self) -> Optional[Any]:
         """
         Returns the reference to the stored userctx
 
@@ -1999,7 +1999,7 @@ class Env(object):
         self._default_db = None
         self._current_txn = None
         self._dependents: List[ReferenceType[TXN] | ReferenceType[DBI]] = []
-        self._ctx = None
+        self._ctx: Optional[Any] = None
         if ret != MDBXError.MDBX_SUCCESS.value:
             raise make_exception(ret)
         if geometry:
@@ -2194,7 +2194,7 @@ class Env(object):
                 raise make_exception(ret)
             return ptr.value.decode("utf-8")
 
-    def set_user_ctx(self, val):
+    def set_user_ctx(self, val: Any) -> None:
         """
         Store val in self._ctx
 
@@ -2205,7 +2205,7 @@ class Env(object):
         """
         self._ctx = val
 
-    def get_user_ctx(self):
+    def get_user_ctx(self) -> Optional[Any]:
         """
         Retrieve self._ctx
 
@@ -2215,7 +2215,7 @@ class Env(object):
         """
         return self._ctx
 
-    def set_user_ctx_int(self, val: ctypes.c_void_p):
+    def set_user_ctx_int(self, val: ctypes.c_void_p) -> None:
         """
         Thin wrapper around mdbx_env_set_userctx
         Store val in self._ctx
@@ -2718,7 +2718,7 @@ class Cursor:
         """
         self._db = db
         self._txn = txn
-        self._ctx = ctx
+        self._ctx: Optional[Any] = ctx
         self._started = False
         self._cursor = ctypes.POINTER(MDBXCursor)()
         ret = None
@@ -2818,13 +2818,13 @@ class Cursor:
             self._txn = None
             self._db = None
 
-    def set_user_ctx(self, val):
+    def set_user_ctx(self, val: Any) -> None:
         """
         Sets self._ctx to val
         """
         self._ctx = val
 
-    def get_user_ctx(self):
+    def get_user_ctx(self) -> Optional[Any]:
         """
         Returns self._ctx
         :returns self._ctx
