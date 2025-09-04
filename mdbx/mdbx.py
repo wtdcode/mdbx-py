@@ -3185,7 +3185,7 @@ def make_exception(errno: int):
     Construct an exception as correct
     """
     err = _lib.mdbx_liberr2str(errno)
-    if err != None:
+    if err is not None:
         return MDBXErrorExc(errno, err)
     return OSError(errno, os.strerror(errno))
 
