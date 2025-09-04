@@ -25,7 +25,7 @@ import os
 from pathlib import Path
 import sys
 import itertools
-from typing import Optional, Tuple, Iterator, List, Any
+from typing import Optional, Tuple, Iterator, List, Any, Callable
 from _ctypes import _Pointer
 from weakref import ReferenceType
 import weakref
@@ -2529,7 +2529,7 @@ class Env(object):
             raise make_exception(ret)
         return True
 
-    def set_hsr(self, hsr: _lib.MDBX_hsr_func):
+    def set_hsr(self, hsr: MDBXHSRFunc):
         """
         Thin wrapper around mdbx_env_set_hsr
 
@@ -2538,21 +2538,24 @@ class Env(object):
         :type hsr: _lib.HDBX_hsr_func
         """
         if self._env:
-            ret = _lib.mdbx_env_set_hsr(self._env, ctypes.byref(hsr))
+            cb = MDBX_hsr_func(hsr)
+
+            ret = _lib.mdbx_env_set_hsr(self._env, cb)
             if ret != MDBXError.MDBX_SUCCESS.value:
                 raise make_exception(ret)
+
+            self._hsr_callback = cb
         raise RuntimeError("Env is not available")
 
-    def get_hsr(self) -> _lib.MDBX_hsr_func:
+    def get_hsr(self) -> MDBXHSRFunc:
         """
         Thin wrapper around mdbx_env_get_hsr
 
         Raises MDBXErrorExc with returned error in case of failure
         """
         if self._env:
-            ptr = _lib.MDBX_hsr_func()
-            ptr.value = _lib.mdbx_env_get_hsr(self._env)
-            return ctypes.cast(ptr, _lib.MDBX_hsr_func)
+            raw_ptr = _lib.mdbx_env_get_hsr(self._env)
+            return ctypes.cast(raw_ptr, MDBX_hsr_func)
         raise RuntimeError("Env is not available")
 
 
@@ -3527,8 +3530,8 @@ try:
 except:
     pass
 
-_lib.MDBX_hsr_func = ctypes.CFUNCTYPE(ctypes.c_int)
-_lib.MDBX_hsr_func.argtypes = [
+MDBX_hsr_func = ctypes.CFUNCTYPE(
+    ctypes.c_int,
     ctypes.POINTER(MDBXEnv),
     ctypes.POINTER(MDBXTXN),
     ctypes.c_int,
@@ -3537,9 +3540,21 @@ _lib.MDBX_hsr_func.argtypes = [
     ctypes.c_uint,
     ctypes.c_size_t,
     ctypes.c_int,
-]
-_lib.MDBX_hsr_func.restype = ctypes.c_int
+)
 
+MDBXHSRFunc = Callable[
+    [
+        Any,
+        Any,
+        int,
+        int,
+        int,  # of int/ctypes.c_uint64 afhankelijk van je voorkeur
+        int,
+        int,
+        int,
+    ],
+    int,
+]
 
 _lib.mdbx_limits_dbsize_max.argtypes = [ctypes.POINTER(ctypes.c_int)]
 _lib.mdbx_limits_dbsize_max.restype = ctypes.POINTER(ctypes.c_int)
