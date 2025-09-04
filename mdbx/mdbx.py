@@ -2737,13 +2737,6 @@ class Cursor:
         if txn:
             txn._dependents.append(weakref.ref(self))
 
-    def dbi(self):
-        """
-        :returns internal DBI object
-        :rtype DBI
-        """
-        return self._db
-
     def bind(self, txn: TXN, db: DBI = None):
         """
         Thin wrapper around mdbx_cursor_bind
