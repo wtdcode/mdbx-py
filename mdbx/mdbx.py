@@ -3501,7 +3501,7 @@ _lib.mdbx_limits_dbsize_max.restype = ctypes.POINTER(ctypes.c_int)
 _lib.mdbx_limits_dbsize_min.argtypes = [ctypes.POINTER(ctypes.c_int)]
 _lib.mdbx_limits_dbsize_min.restype = ctypes.POINTER(ctypes.c_int)
 
-_lib.mdbx_limits_keysize_max.argtypes = [ctypes.POINTER(ctypes.c_int), MDBXDBFlags]
+_lib.mdbx_limits_keysize_max.argtypes = [ctypes.POINTER(ctypes.c_int), ctypes.c_uint]
 _lib.mdbx_limits_keysize_max.restype = ctypes.POINTER(ctypes.c_int)
 
 _lib.mdbx_limits_pgsize_max.argtypes = []
@@ -3513,7 +3513,7 @@ _lib.mdbx_limits_pgsize_min.restype = ctypes.POINTER(ctypes.c_int)
 _lib.mdbx_limits_txnsize_max.argtypes = [ctypes.POINTER(ctypes.c_int)]
 _lib.mdbx_limits_txnsize_max.restype = ctypes.POINTER(ctypes.c_int)
 
-_lib.mdbx_limits_valsize_max.argtypes = [ctypes.POINTER(ctypes.c_int), MDBXDBFlags]
+_lib.mdbx_limits_valsize_max.argtypes = [ctypes.POINTER(ctypes.c_int), ctypes.c_uint]
 _lib.mdbx_limits_valsize_max.restype = ctypes.POINTER(ctypes.c_int)
 
 
