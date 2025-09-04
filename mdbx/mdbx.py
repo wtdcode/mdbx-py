@@ -1877,13 +1877,13 @@ class TXN:
         if self._txn:
             dbi = ctypes.c_uint32()
             dbi.value = 0
+            cname: Optional[bytes]
             if isinstance(name, str):
                 cname = name.encode("utf-8")
             else:
                 cname = name
-            if cname:
-                cname = ctypes.c_char_p(cname)
-            ret = _lib.mdbx_dbi_open(self._txn, cname, flags, ctypes.pointer(dbi))
+            bname = ctypes.c_char_p(cname) if cname else None
+            ret = _lib.mdbx_dbi_open(self._txn, bname, flags, ctypes.pointer(dbi))
             if ret != MDBXError.MDBX_SUCCESS.value:
                 raise make_exception(ret)
             ret = DBI(self._env, MDBXDBI(dbi))
