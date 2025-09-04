@@ -1875,9 +1875,9 @@ class TXN:
         :rtype DBI in case of success, or bool in case of failure
         """
         if self._txn:
+            cname: Optional[bytes]
             dbi = ctypes.c_uint32()
             dbi.value = 0
-            cname: Optional[bytes]
             if isinstance(name, str):
                 cname = name.encode("utf-8")
             else:
@@ -3247,8 +3247,8 @@ _lib.mdbx_canary_get.restype = ctypes.c_int
 _lib.mdbx_canary_put.argtypes = [ctypes.POINTER(MDBXTXN), ctypes.POINTER(MDBXCanary)]
 _lib.mdbx_canary_put.restype = ctypes.c_int
 
-_lib.MDBX_reader_list_func = ctypes.CFUNCTYPE(ctypes.c_int)
-_lib.MDBX_reader_list_func.argtypes = [
+MDBX_reader_list_func = ctypes.CFUNCTYPE(ctypes.c_int)
+MDBX_reader_list_func.argtypes = [
     ctypes.c_void_p,
     ctypes.c_int,
     ctypes.c_int,
@@ -3258,10 +3258,10 @@ _lib.MDBX_reader_list_func.argtypes = [
     ctypes.c_size_t,
     ctypes.c_size_t,
 ]
-_lib.MDBX_reader_list_func.restype = ctypes.c_int
+MDBX_reader_list_func.restype = ctypes.c_int
 _lib.mdbx_reader_list.argtypes = [
     ctypes.POINTER(MDBXEnv),
-    ctypes.POINTER(_lib.MDBX_reader_list_func),
+    ctypes.POINTER(MDBX_reader_list_func),
     ctypes.c_void_p,
 ]
 _lib.mdbx_reader_list.restype = ctypes.c_int
