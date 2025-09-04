@@ -1749,7 +1749,7 @@ class TXN:
         if self._txn:
             ret = _lib.mdbx_txn_set_userctx(self._txn, ctx)
             if ret != MDBXError.MDBX_SUCCESS.value:
-                raise MDBXErrorExc(ret)
+                raise make_exception(ret)
             return True
         return False
 
