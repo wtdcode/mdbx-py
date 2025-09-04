@@ -25,7 +25,7 @@ import os
 from pathlib import Path
 import sys
 import itertools
-from typing import Optional, Tuple, Iterator, List
+from typing import Optional, Tuple, Iterator, List, Any
 from weakref import ReferenceType
 import weakref
 import logging
@@ -1518,7 +1518,7 @@ class Iovec(ctypes.Structure):
 
     _fields_ = [("iov_base", ctypes.c_void_p), ("iov_len", ctypes.c_size_t)]
 
-    def __init__(self, base: bytes = None, length: int = 0):
+    def __init__(self, base: Optional[bytes] = None, length: int = 0):
         if length < 0:
             raise ValueError("length must be 0 or positive")
         if length == 0 and base:
@@ -1609,7 +1609,7 @@ class TXN:
     """
 
     def __init__(
-        self, env: Env, parent: TXN = None, flags: MDBXTXNFlags = 0, context=None
+        self, env: Env, parent: Optional[TXN] = None, flags: MDBXTXNFlags = 0, context=None
     ):
         """
 
@@ -1842,7 +1842,7 @@ class TXN:
 
     def create_map(
         self,
-        name: str | bytes | None = None,
+        name: Optional[str | bytes | None] = None,
         flags: MDBXDBFlags = MDBXDBFlags.MDBX_CREATE,
     ):
         """
@@ -1860,7 +1860,7 @@ class TXN:
 
     def open_map(
         self,
-        name: str | bytes | None = None,
+        name: Optional[str | bytes | None] = None,
         flags: MDBXDBFlags = MDBXDBFlags.MDBX_DB_DEFAULTS,
     ):
         """
@@ -1988,11 +1988,11 @@ class Env(object):
         path: str,
         flags: MDBXEnvFlags = 0,
         mode: MDBXMode = 0o755,
-        geometry: Geometry = None,
+        geometry: Optional[Geometry] = None,
         maxreaders: int = 1,
         maxdbs: int = 1,
-        sync_bytes: int = None,
-        sync_period: int = None,
+        sync_bytes: Optional[int] = None,
+        sync_period: Optional[int] = None,
     ):
         self._env = ctypes.pointer(MDBXEnv())
         ret = _lib.mdbx_env_create(ctypes.byref(self._env))
@@ -2161,7 +2161,7 @@ class Env(object):
     def rw_transaction(self) -> TXN:
         return self.start_transaction(MDBXTXNFlags.MDBX_TXN_READWRITE, None)
 
-    def start_transaction(self, flags: MDBXTXNFlags = 0, parent_txn: TXN = None):
+    def start_transaction(self, flags: MDBXTXNFlags = 0, parent_txn: Optional[TXN] = None):
         """
         Starts a transaction on the given Env
 
@@ -2673,7 +2673,7 @@ class DBI:
             ]
         )
 
-    def delete(self, txn: TXN, key: bytes, value: bytes = None):
+    def delete(self, txn: TXN, key: bytes, value: Optional[bytes] = None):
         """
         Thin wrapper around mdbx_del
 
@@ -2704,7 +2704,7 @@ class Cursor:
     Used for iterating over values within a key
     """
 
-    def __init__(self, db: DBI = None, txn: TXN = None, ctx=None):
+    def __init__(self, db: Optional[DBI] = None, txn: Optional[TXN] = None, ctx: Optional[Any] = None):
         """
         Thin wrapper around either mdbx_cursor_open or mdbx_cursor_create
 
@@ -2737,7 +2737,7 @@ class Cursor:
         if txn:
             txn._dependents.append(weakref.ref(self))
 
-    def bind(self, txn: TXN, db: DBI = None):
+    def bind(self, txn: TXN, db: Optional[DBI] = None):
         """
         Thin wrapper around mdbx_cursor_bind
 
