@@ -1706,6 +1706,7 @@ class TXN:
             self._txn = None
             self._env = None
             return commit_latency
+        raise RuntimeError("TXN is not available")
 
     def id(self) -> int:
         """
@@ -1752,7 +1753,7 @@ class TXN:
             if ret != MDBXError.MDBX_SUCCESS.value:
                 raise make_exception(ret)
             return True
-        return False
+        raise RuntimeError("TXN is not available")
 
     def get_user_ctx(self) -> Optional[Any]:
         """
@@ -1773,6 +1774,7 @@ class TXN:
         """
         if self._txn:
             return _lib.mdbx_txn_get_userctx(self._txn)
+        raise RuntimeError("TXN is not available")
 
     def renew(self):
         """
@@ -1788,7 +1790,7 @@ class TXN:
             if ret != MDBXError.MDBX_SUCCESS.value:
                 raise make_exception(ret)
             return True
-        return False
+        raise RuntimeError("TXN is not available")
 
     def reset(self):
         """
@@ -1804,7 +1806,7 @@ class TXN:
             if ret != MDBXError.MDBX_SUCCESS.value:
                 raise make_exception(ret)
             return True
-        return False
+        raise RuntimeError("TXN is not available")
 
     def __inform_deps(self):
         for cur in self._dependents:
@@ -1839,7 +1841,7 @@ class TXN:
             self._txn = None
             self._env = None
             return True
-        return False
+        raise RuntimeError("TXN is not available")
 
     def create_map(
         self,
@@ -1863,7 +1865,7 @@ class TXN:
         self,
         name: Optional[str | bytes | None] = None,
         flags: MDBXDBFlags = MDBXDBFlags.MDBX_DB_DEFAULTS,
-    ):
+    ) -> DBI:
         """
         Wrapper around mdbx_dbi_open, intended to open an existing map
 
@@ -1890,9 +1892,8 @@ class TXN:
 
             # self._env should never be None, but like self._tnx will be None upon close
             assert self._env
-            ret = DBI(self._env, MDBXDBI(dbi))
-            return ret
-        return False
+            return DBI(self._env, MDBXDBI(dbi))
+        raise RuntimeError("TXN is not available")
 
     def get_info(self, scan_rlt: bool = False) -> MDBXTXNInfo:
         """
@@ -2233,6 +2234,8 @@ class Env(object):
             ret = _lib.mdbx_env_set_userctx(self._env, val)
             if ret != MDBXError.MDBX_SUCCESS.value:
                 raise make_exception(ret)
+            return
+        raise RuntimeError("Env is not available")
 
     def get_user_ctx_int(self) -> ctypes.c_void_p:
         """
@@ -2244,6 +2247,7 @@ class Env(object):
         """
         if self._env:
             return _lib.mdbx_env_get_userctx(self._env)
+        raise RuntimeError("Env is not available")
 
     def get_info(self, txn: TXN) -> MDBXEnvinfo:
         """
@@ -2263,6 +2267,7 @@ class Env(object):
             if ret != MDBXError.MDBX_SUCCESS.value:
                 raise make_exception(ret)
             return info
+        raise RuntimeError("Env is not available")
 
     def get_stat(self, txn: TXN) -> MDBXStat:
         """
@@ -2280,10 +2285,11 @@ class Env(object):
             if ret != MDBXError.MDBX_SUCCESS.value:
                 raise make_exception(ret)
             return stats
+        raise RuntimeError("Env is not available")
 
     def copy(
         self, destination: str, flags: MDBXCopyMode = MDBXCopyMode.MDBX_CP_DEFAULTS
-    ):
+    ) -> None:
         """
         Thin wrapper around mdbx_env_copy
 
@@ -2295,8 +2301,10 @@ class Env(object):
             ret = _lib.mdbx_env_copy(self._env, destination, flags)
             if ret != MDBXError.MDBX_SUCCESS.value:
                 raise make_exception(ret)
+            return
+        raise RuntimeError("Env is not available")
 
-    def copy2fd(self, fd: int, flags: MDBXCopyMode = MDBXCopyMode.MDBX_CP_DEFAULTS):
+    def copy2fd(self, fd: int, flags: MDBXCopyMode = MDBXCopyMode.MDBX_CP_DEFAULTS) -> None:
         """
         Thin wrapper around mdbx_env_copy2fd
 
@@ -2315,8 +2323,10 @@ class Env(object):
             )
             if ret != MDBXError.MDBX_SUCCESS.value:
                 raise make_exception(ret)
+            return
+        raise RuntimeError("Env is not available")
 
-    def register_thread(self):
+    def register_thread(self) -> None:
         """
         Thin wrapper around mdbx_thread_register
 
@@ -2326,8 +2336,10 @@ class Env(object):
             ret = _lib.mdbx_thread_register(self._env)
             if ret != MDBXError.MDBX_SUCCESS.value:
                 raise make_exception(ret)
+            return
+        raise RuntimeError("Env is not available")
 
-    def unregister_thread(self):
+    def unregister_thread(self) -> None:
         """
         Thin wrapper around mdbx_unregister_thread
 
@@ -2337,8 +2349,10 @@ class Env(object):
             ret = _lib.mdbx_thread_unregister(self._env)
             if ret != MDBXError.MDBX_SUCCESS.value:
                 raise make_exception(ret)
+            return
+        raise RuntimeError("Env is not available")
 
-    def set_geometry(self, geometry: Geometry):
+    def set_geometry(self, geometry: Geometry) -> None:
         """
         Thin wrapper around mdbx_env_set_geometry
 
@@ -2358,8 +2372,10 @@ class Env(object):
             )
             if ret != MDBXError.MDBX_SUCCESS.value:
                 raise make_exception(ret)
+            return
+        raise RuntimeError("Env is not available")
 
-    def set_option(self, option: int, value: int) -> bool:
+    def set_option(self, option: int, value: int) -> None:
         """
         Thin wrapper around mdbx_env_set_option
 
@@ -2374,6 +2390,8 @@ class Env(object):
             ret = _lib.mdbx_env_set_option(self._env, option, val)
             if ret != MDBXError.MDBX_SUCCESS.value:
                 raise make_exception(ret)
+            return
+        raise RuntimeError("Env is not available")
 
     def get_option(self, option: int) -> int:
         """
@@ -2391,6 +2409,7 @@ class Env(object):
             if ret != MDBXError.MDBX_SUCCESS.value:
                 raise make_exception(ret)
             return val.value
+        raise RuntimeError("Env is not available")
 
     def get_fd(self) -> int:
         """
@@ -2406,6 +2425,7 @@ class Env(object):
             if ret != MDBXError.MDBX_SUCCESS.value:
                 raise make_exception(ret)
             return fd.value
+        raise RuntimeError("Env is not available")
 
     def get_maxdbs(self) -> int:
         """
@@ -2421,6 +2441,7 @@ class Env(object):
             if ret != MDBXError.MDBX_SUCCESS.value:
                 raise make_exception(ret)
             return val.value
+        raise RuntimeError("Env is not available")
 
     def get_maxkeysize(self, flags: int = 0):
         """
@@ -2432,8 +2453,9 @@ class Env(object):
         if self._env:
             val = _lib.mdbx_env_get_maxkeysize_ex(self._env, flags)
             return None if val == -1 else val
+        raise RuntimeError("Env is not available")
 
-    def get_maxvalsize(self, flags: int = 0):
+    def get_maxvalsize(self, flags: int = 0) -> Optional[int]:
         """
         Thin wrapper around mdbx_env_get_maxvalsize_ex
 
@@ -2443,8 +2465,9 @@ class Env(object):
         if self._env:
             val = _lib.mdbx_env_get_maxvalsize_ex(self._env, flags)
             return None if val == -1 else val
+        raise RuntimeError("Env is not available")
 
-    def sync(self, force: bool = False, nonblock: bool = False):
+    def sync(self, force: bool = False, nonblock: bool = False) -> None:
         """
         Thin wrapper around mdbx_env_sync_ex
 
@@ -2460,6 +2483,8 @@ class Env(object):
             )
             if ret != MDBXError.MDBX_RESULT_TRUE.value and ret != 0:
                 raise make_exception(ret)
+            return
+        raise RuntimeError("Env is not available")
 
     def get_db_names(self):
         """
@@ -2481,6 +2506,7 @@ class Env(object):
             for key, val in cursor:
                 names.append(key.decode("utf-8"))
             return names
+        raise RuntimeError("Env is not available")
 
     @classmethod
     def delete(cls, path: str, mode: int = 0):
@@ -2515,6 +2541,7 @@ class Env(object):
             ret = _lib.mdbx_env_set_hsr(self._env, ctypes.byref(hsr))
             if ret != MDBXError.MDBX_SUCCESS.value:
                 raise make_exception(ret)
+        raise RuntimeError("Env is not available")
 
     def get_hsr(self) -> _lib.MDBX_hsr_func:
         """
@@ -2526,6 +2553,7 @@ class Env(object):
             ptr = _lib.MDBX_hsr_func()
             ptr.value = _lib.mdbx_env_get_hsr(self._env)
             return ctypes.cast(ptr, _lib.MDBX_hsr_func)
+        raise RuntimeError("Env is not available")
 
 
 class DBI:
@@ -2848,6 +2876,7 @@ class Cursor:
             ret = _lib.mdbx_cursor_set_userctx(self._cursor, ptr)
             if ret != MDBXError.MDBX_SUCCESS.value:
                 raise make_exception(ret)
+        raise RuntimeError("Cursor is not available")
 
     def get_user_ctx_int(self) -> ctypes.c_void_p:
         """
@@ -2856,6 +2885,7 @@ class Cursor:
         """
         if self._cursor:
             return _lib.mdbx_cursor_get_userctx(self._cursor)
+        raise RuntimeError("Cursor is not available")
 
     def txn(self) -> MDBXTXN:
         """
@@ -2865,6 +2895,7 @@ class Cursor:
         """
         if self._cursor:
             return _lib.mdbx_cursor_txn(self._cursor)
+        raise RuntimeError("Cursor is not available")
 
     def dbi(self) -> MDBXDBI:
         """
@@ -2874,6 +2905,7 @@ class Cursor:
         """
         if self._cursor:
             return _lib.mdbx_cursor_dbi(self._cursor)
+        raise RuntimeError("Cursor is not available")
 
     def copy(self, dest: Cursor) -> Cursor:
         """
@@ -2927,6 +2959,7 @@ class Cursor:
             out_key = io_key.to_bytes()
             out_value = io_data.to_bytes()
             return (out_key, out_value)
+        raise RuntimeError("Cursor is not available")
 
     def get(
         self, key: Optional[bytes], cursor_op: MDBXCursorOp = MDBXCursorOp.MDBX_FIRST
@@ -2947,7 +2980,7 @@ class Cursor:
 
     def put(
         self, key: bytes, val: bytes, flags: MDBXPutFlags = MDBXPutFlags.MDBX_UPSERT
-    ):
+    ) -> None:
         """
         Thin wrapper around mdbx_cursor_put
 
@@ -2968,8 +3001,10 @@ class Cursor:
             )
             if ret != MDBXError.MDBX_SUCCESS.value:
                 raise make_exception(ret)
+            return
+        raise RuntimeError("Cursor is not available")
 
-    def delete(self, cursor_op: MDBXCursorOp = MDBXCursorOp.MDBX_FIRST):
+    def delete(self, cursor_op: MDBXCursorOp = MDBXCursorOp.MDBX_FIRST) -> None:
         """
         Thin wrapper around mdbx_cursor_del
 
@@ -2977,9 +3012,12 @@ class Cursor:
         :param cursor_op: op parameter to mdbx_cursor_delete
         :type cursor_op: MDBXCursorOP
         """
-        ret = _lib.mdbx_cursor_del(self._cursor, cursor_op)
-        if ret != MDBXError.MDBX_SUCCESS.value:
-            raise make_exception(ret)
+        if self._cursor:
+            ret = _lib.mdbx_cursor_del(self._cursor, cursor_op)
+            if ret != MDBXError.MDBX_SUCCESS.value:
+                raise make_exception(ret)
+            return
+        raise RuntimeError("Cursor is not available")
 
     def count(self) -> int:
         """
@@ -2995,6 +3033,7 @@ class Cursor:
             if ret != MDBXError.MDBX_SUCCESS.value:
                 raise make_exception(ret)
             return int(count)
+        raise RuntimeError("Cursor is not available")
 
     def eof(self) -> bool:
         """
@@ -3013,6 +3052,7 @@ class Cursor:
                 return False
             if ret != MDBXError.MDBX_SUCCESS.value:
                 raise make_exception(ret)
+        raise RuntimeError("Cursor is not available")
 
     def on_first(self) -> bool:
         """
@@ -3030,7 +3070,7 @@ class Cursor:
                 return False
             if ret != MDBXError.MDBX_SUCCESS.value:
                 raise make_exception(ret)
-        return False
+        raise RuntimeError("Cursor is not available")
 
     def on_last(self) -> bool:
         """
@@ -3048,7 +3088,7 @@ class Cursor:
                 return False
             if ret != MDBXError.MDBX_SUCCESS.value:
                 raise make_exception(ret)
-        return False
+        raise RuntimeError("Cursor is not available")
 
     def renew(self, txn: TXN):
         """
@@ -3064,7 +3104,7 @@ class Cursor:
                 return True
             if ret != MDBXError.MDBX_SUCCESS.value:
                 raise make_exception(ret)
-        return False
+        raise RuntimeError("Cursor is not available")
 
     def iter(
         self,
