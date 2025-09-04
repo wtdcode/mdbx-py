@@ -2576,15 +2576,15 @@ class DBI:
         :param key: Key to lookup
         :type key: bytes
         """
-        key = Iovec(key)
-        data = Iovec(None, 1)
-        ret = _lib.mdbx_get(txn._txn, self._dbi, ctypes.byref(key), ctypes.byref(data))
+        key_iovec = Iovec(key)
+        data_iovec = Iovec(None, 1)
+        ret = _lib.mdbx_get(txn._txn, self._dbi, ctypes.byref(key_iovec), ctypes.byref(data_iovec))
         if ret == MDBXError.MDBX_NOTFOUND:
             return None
         if ret != MDBXError.MDBX_SUCCESS.value:
             raise make_exception(ret)
 
-        return data.to_bytes()
+        return data_iovec.to_bytes()
 
     def get_stat(self, txn: TXN) -> MDBXStat:
         """
