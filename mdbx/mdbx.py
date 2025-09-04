@@ -26,6 +26,7 @@ from pathlib import Path
 import sys
 import itertools
 from typing import Optional, Tuple, Iterator, List, Any
+from _ctypes import _Pointer
 from weakref import ReferenceType
 import weakref
 import logging
@@ -1623,7 +1624,7 @@ class TXN:
         :param context: User defined context object, can be anything.
         :type context: Object
         """
-        self._txn = ctypes.POINTER(MDBXTXN)()
+        self._txn: _Pointer[MDBXTXN] | None = ctypes.POINTER(MDBXTXN)()
         self._env: Env | None = env
         self._ctx: Optional[Any] = ctx
         self._flags = flags
