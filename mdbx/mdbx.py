@@ -1624,7 +1624,7 @@ class TXN:
         :type context: Object
         """
         self._txn = ctypes.POINTER(MDBXTXN)()
-        self._env = env
+        self._env: Env | None = env
         self._ctx: Optional[Any] = ctx
         self._flags = flags
         self._dependents: List[ReferenceType[Cursor]] = []
@@ -1886,6 +1886,9 @@ class TXN:
             ret = _lib.mdbx_dbi_open(self._txn, bname, flags, ctypes.pointer(dbi))
             if ret != MDBXError.MDBX_SUCCESS.value:
                 raise make_exception(ret)
+
+            # self._env should never be None, but like self._tnx will be None upon close
+            assert self._env
             ret = DBI(self._env, MDBXDBI(dbi))
             return ret
         return False
