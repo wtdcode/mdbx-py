@@ -1987,7 +1987,7 @@ class Env(object):
     def __init__(
         self,
         path: str,
-        flags: MDBXEnvFlags = 0,
+        flags: MDBXEnvFlags = MDBXEnvFlags.MDBX_ENV_DEFAULTS,
         mode: MDBXMode = 0o755,
         geometry: Optional[Geometry] = None,
         maxreaders: int = 1,
