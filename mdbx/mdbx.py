@@ -644,7 +644,6 @@ class MDBXEnvFlags(enum.IntFlag):
 
 
 class MDBXTXNFlags(enum.IntFlag):
-
     # Start read-write transaction.
     #
     # Only one write transaction may be active at a time. Writes are fully
@@ -684,7 +683,6 @@ class MDBXTXNFlags(enum.IntFlag):
 
 
 class MDBXDBFlags(enum.IntFlag):
-
     def from_param(self) -> int:
         return int(self)
 
@@ -729,7 +727,6 @@ class MDBXDBFlags(enum.IntFlag):
 
 
 class MDBXPutFlags(enum.IntFlag):
-
     def from_param(self) -> int:
         return int(self)
 
@@ -790,7 +787,6 @@ class MDBXCopyFlags(enum.IntFlag):
 
 
 class MDBXCursorOp(enum.IntEnum):
-
     def from_param(self) -> int:
         return int(self)
 
@@ -1016,7 +1012,6 @@ class MDBXError(enum.IntFlag):
 
 
 class MDBXOption(enum.IntEnum):
-
     def from_param(self) -> int:
         return int(self)
 
@@ -1035,7 +1030,6 @@ class MDBXOption(enum.IntEnum):
 
 
 class MDBXEnvDeleteMode(enum.IntEnum):
-
     def from_param(self) -> int:
         return int(self)
 
@@ -1052,7 +1046,6 @@ class MDBXDBIState(enum.IntFlag):
 
 
 class MDBXPageType(enum.IntEnum):
-
     def from_param(self) -> int:
         return int(self)
 
@@ -1068,7 +1061,6 @@ class MDBXPageType(enum.IntEnum):
 
 
 class MDBXCopyMode(enum.IntEnum):
-
     def from_param(self) -> int:
         return int(self)
 
@@ -1601,7 +1593,11 @@ class TXN:
     """
 
     def __init__(
-        self, env: Env, parent: Optional[TXN] = None, flags: int = MDBXTXNFlags.MDBX_TXN_READWRITE, ctx: Optional[Any] = None
+        self,
+        env: Env,
+        parent: Optional[TXN] = None,
+        flags: int = MDBXTXNFlags.MDBX_TXN_READWRITE,
+        ctx: Optional[Any] = None,
     ):
         """
 
@@ -1636,9 +1632,12 @@ class TXN:
     def __enter__(self) -> TXN:
         return self
 
-    def __exit__(self, exception_type: Optional[Type[BaseException]],
-                 exception_value: Optional[BaseException],
-                 exception_traceback: Optional[TracebackType]) -> Literal[False]:
+    def __exit__(
+        self,
+        exception_type: Optional[Type[BaseException]],
+        exception_value: Optional[BaseException],
+        exception_traceback: Optional[TracebackType],
+    ) -> Literal[False]:
         logging.getLogger(__name__).debug(
             f"Transaction {self._txn} exits, dependents: {self._dependents}"
         )
@@ -2040,14 +2039,17 @@ class Env(object):
     def __enter__(self) -> Env:
         return self
 
-    def __exit__(self, exception_type: Optional[Type[BaseException]],
-                 exception_value: Optional[BaseException],
-                 exception_traceback: Optional[TracebackType]) -> Literal[False]:
+    def __exit__(
+        self,
+        exception_type: Optional[Type[BaseException]],
+        exception_value: Optional[BaseException],
+        exception_traceback: Optional[TracebackType],
+    ) -> Literal[False]:
         self.close()
         return False
 
     def __repr__(self) -> str:
-        return f"Env { "path" : \"{self.get_path()}\" }"
+        return f'Env {{ "path" : "{self.get_path()}" }}'
 
     def __getitem__(self, key: str | bytes) -> bytes | None:
         """
@@ -2163,7 +2165,11 @@ class Env(object):
     def rw_transaction(self) -> TXN:
         return self.start_transaction(MDBXTXNFlags.MDBX_TXN_READWRITE, None)
 
-    def start_transaction(self, flags: int = MDBXTXNFlags.MDBX_TXN_READWRITE, parent_txn: Optional[TXN] = None) -> TXN:
+    def start_transaction(
+        self,
+        flags: int = MDBXTXNFlags.MDBX_TXN_READWRITE,
+        parent_txn: Optional[TXN] = None,
+    ) -> TXN:
         """
         Starts a transaction on the given Env
 
@@ -2442,7 +2448,9 @@ class Env(object):
             return val.value
         raise RuntimeError("Env is not available")
 
-    def get_maxkeysize(self, flags: int = MDBXDBFlags.MDBX_DB_DEFAULTS) -> Optional[int]:
+    def get_maxkeysize(
+        self, flags: int = MDBXDBFlags.MDBX_DB_DEFAULTS
+    ) -> Optional[int]:
         """
         Thin wrapper around mdbx_env_get_maxkeysize_ex
 
@@ -2454,7 +2462,9 @@ class Env(object):
             return None if val == -1 else val
         raise RuntimeError("Env is not available")
 
-    def get_maxvalsize(self, flags: int = MDBXDBFlags.MDBX_DB_DEFAULTS) -> Optional[int]:
+    def get_maxvalsize(
+        self, flags: int = MDBXDBFlags.MDBX_DB_DEFAULTS
+    ) -> Optional[int]:
         """
         Thin wrapper around mdbx_env_get_maxvalsize_ex
 
@@ -2498,8 +2508,8 @@ class Env(object):
         if self._env:
             if not self.get_maxdbs():
                 return []
-            txn = TXN(self, flags = MDBXTXNFlags.MDBX_TXN_RDONLY)
-            dbi = txn.open_map(flags = MDBXDBFlags.MDBX_DB_DEFAULTS)
+            txn = TXN(self, flags=MDBXTXNFlags.MDBX_TXN_RDONLY)
+            dbi = txn.open_map(flags=MDBXDBFlags.MDBX_DB_DEFAULTS)
             names: list[str] = []
             cursor = Cursor(dbi, txn)
             for key, val in cursor:
@@ -2509,7 +2519,9 @@ class Env(object):
         raise RuntimeError("Env is not available")
 
     @classmethod
-    def delete(cls, path: str, mode: MDBXEnvDeleteMode = MDBXEnvDeleteMode.MDBX_ENV_JUST_DELETE) -> bool:
+    def delete(
+        cls, path: str, mode: MDBXEnvDeleteMode = MDBXEnvDeleteMode.MDBX_ENV_JUST_DELETE
+    ) -> bool:
         """
         Thin wrapper around mdbx_env_delete
 
@@ -2580,9 +2592,12 @@ class DBI:
     def __enter__(self) -> DBI:
         return self
 
-    def __exit__(self, exception_type: Optional[Type[BaseException]],
-                 exception_value: Optional[BaseException],
-                 exception_traceback: Optional[TracebackType]) -> Literal[False]:
+    def __exit__(
+        self,
+        exception_type: Optional[Type[BaseException]],
+        exception_value: Optional[BaseException],
+        exception_traceback: Optional[TracebackType],
+    ) -> Literal[False]:
         return False
 
     def __repr__(self) -> str:
@@ -2611,7 +2626,9 @@ class DBI:
         """
         key_iovec = Iovec(key)
         data_iovec = Iovec(None, 1)
-        ret = _lib.mdbx_get(txn._txn, self._dbi, ctypes.byref(key_iovec), ctypes.byref(data_iovec))
+        ret = _lib.mdbx_get(
+            txn._txn, self._dbi, ctypes.byref(key_iovec), ctypes.byref(data_iovec)
+        )
         if ret == MDBXError.MDBX_NOTFOUND:
             return None
         if ret != MDBXError.MDBX_SUCCESS.value:
@@ -2635,7 +2652,9 @@ class DBI:
             raise make_exception(ret)
         return stats
 
-    def put(self, txn: TXN, key: bytes, value: bytes, flags: int = MDBXPutFlags.MDBX_UPSERT) -> bytes | None:
+    def put(
+        self, txn: TXN, key: bytes, value: bytes, flags: int = MDBXPutFlags.MDBX_UPSERT
+    ) -> bytes | None:
         """
         Thin wrapper around mdbx_put
 
@@ -2678,7 +2697,13 @@ class DBI:
         if ret != MDBXError.MDBX_SUCCESS.value:
             raise make_exception(ret)
 
-    def replace(self, txn: TXN, key: bytes, new_data: bytes, flags: int = MDBXPutFlags.MDBX_UPSERT) -> bytes:
+    def replace(
+        self,
+        txn: TXN,
+        key: bytes,
+        new_data: bytes,
+        flags: int = MDBXPutFlags.MDBX_UPSERT,
+    ) -> bytes:
         """
         Thin wrapper around mdbx_replace
 
@@ -2743,7 +2768,12 @@ class Cursor:
     Used for iterating over values within a key
     """
 
-    def __init__(self, db: Optional[DBI] = None, txn: Optional[TXN] = None, ctx: Optional[Any] = None):
+    def __init__(
+        self,
+        db: Optional[DBI] = None,
+        txn: Optional[TXN] = None,
+        ctx: Optional[Any] = None,
+    ):
         """
         Thin wrapper around either mdbx_cursor_open or mdbx_cursor_create
 
@@ -2793,9 +2823,12 @@ class Cursor:
     def __enter__(self) -> Cursor:
         return self
 
-    def __exit__(self, exception_type: Optional[Type[BaseException]],
-                 exception_value: Optional[BaseException],
-                 exception_traceback: Optional[TracebackType]) -> Literal[False]:
+    def __exit__(
+        self,
+        exception_type: Optional[Type[BaseException]],
+        exception_value: Optional[BaseException],
+        exception_traceback: Optional[TracebackType],
+    ) -> Literal[False]:
         logging.getLogger(__name__).debug(f"Cursor {self._cursor} exits")
         self.__del__()
         return False
@@ -2838,10 +2871,14 @@ class Cursor:
                     raise StopIteration
                 raise make_exception(ret)
             val = bytes(
-                ctypes.cast(val_iov.iov_base, ctypes.POINTER(ctypes.c_ubyte))[: val_iov.iov_len]
+                ctypes.cast(val_iov.iov_base, ctypes.POINTER(ctypes.c_ubyte))[
+                    : val_iov.iov_len
+                ]
             )
             key = bytes(
-                ctypes.cast(key_iov.iov_base, ctypes.POINTER(ctypes.c_ubyte))[: key_iov.iov_len]
+                ctypes.cast(key_iov.iov_base, ctypes.POINTER(ctypes.c_ubyte))[
+                    : key_iov.iov_len
+                ]
             )
             return key, val
         return None, None
@@ -3174,7 +3211,6 @@ class Cursor:
 
 
 class DBIter(object):
-
     def __init__(
         self, cur: Cursor, first_op: MDBXCursorOp, second_op: Optional[MDBXCursorOp]
     ):
@@ -3199,7 +3235,6 @@ class DBIter(object):
 
 
 class DBDupIter(object):
-
     def __init__(self, cur: Cursor, op: MDBXCursorOp):
         self.cur = cur
         self.op = op
