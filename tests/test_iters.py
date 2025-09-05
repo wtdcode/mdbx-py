@@ -90,7 +90,33 @@ class MDBXIterTest(unittest.TestCase):
                     vals = [(k, v) for k, v in cur.iter_dupsort()]
                     expected = [ (x, dup) for x, dups in expected for dup in dups]
                     self.assertEqual(vals, expected)
-                    
+
+    def test_sequence(self) -> None:
+        with Env(self._folder_path.absolute().as_posix()) as env:
+            with env.ro_transaction() as txn:
+                with txn.open_map() as dbi:
+                    self.assertEqual(dbi.get_sequence(txn, 0), 0)
+
+            with env.rw_transaction() as txn:
+                with txn.open_map() as dbi:
+                    self.assertEqual(dbi.get_sequence(txn, 1), 0)
+                    self.assertEqual(dbi.get_sequence(txn, 1), 1)
+                txn.abort()
+
+            with env.ro_transaction() as txn:
+                with txn.open_map() as dbi:
+                    self.assertEqual(dbi.get_sequence(txn, 0), 0)
+
+            with env.rw_transaction() as txn:
+                with txn.open_map() as dbi:
+                    self.assertEqual(dbi.get_sequence(txn, 1), 0)
+                    self.assertEqual(dbi.get_sequence(txn, 1), 1)
+                txn.commit()
+
+            with env.ro_transaction() as txn:
+                with txn.open_map() as dbi:
+                    self.assertEqual(dbi.get_sequence(txn, 0), 2)
+
     def tearDown(self):
         del self._folder
         shutil.rmtree(self._folder_path, ignore_errors=True)
