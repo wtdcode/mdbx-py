@@ -19,6 +19,8 @@ import unittest
 import os
 import string
 import tempfile
+from typing import Any
+
 import mdbx
 import logging
 
@@ -35,17 +37,17 @@ subprocess.run(["rm", "-rf", MDBX_TEST_DIR, "default_db"])
 subprocess.run(["mkdir", "-p", MDBX_TEST_DIR])
 
 
-def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
+def id_generator(size: int = 6, chars: str=string.ascii_uppercase + string.digits) -> str:
     return "".join(random.choice(chars) for _ in range(size))
 
 
 class TestMdbx(unittest.TestCase):
 
-    def test_open(self):
+    def test_open(self) -> None:
         MDBX_TEST_DB_DIR = "%s/%s" % (MDBX_TEST_DIR, inspect.stack()[0][3])
         _db = mdbx.Env(MDBX_TEST_DB_DIR, maxdbs=1)
 
-    def test_write(self):
+    def test_write(self) -> None:
         MDBX_TEST_DB_DIR = "%s/%s" % (MDBX_TEST_DIR, inspect.stack()[0][3])
         db = mdbx.Env(MDBX_TEST_DB_DIR, maxdbs=1)
         txn = db.start_transaction()
@@ -62,17 +64,17 @@ class TestMdbx(unittest.TestCase):
         self.assertEqual(dbi.get_stat(txn).ms_entries, 1)
         db.close()
 
-    def test_db_readitem_writeitem(self):
+    def test_db_readitem_writeitem(self) -> None:
         MDBX_TEST_DB_DIR = "%s/%s" % (MDBX_TEST_DIR, inspect.stack()[0][3])
         db = mdbx.Env(MDBX_TEST_DB_DIR, maxdbs=1)
         db[MDBX_TEST_KEY] = MDBX_TEST_VAL_UTF8
         self.assertEqual(db[MDBX_TEST_KEY], MDBX_TEST_VAL_UTF8)
         db.close()
 
-    def test_db_iter(self):
+    def test_db_iter(self) -> None:
         MDBX_TEST_DB_DIR = "%s/%s" % (MDBX_TEST_DIR, inspect.stack()[0][3])
         db = mdbx.Env(MDBX_TEST_DB_DIR, maxdbs=1024)
-        db_pairs = {}
+        db_pairs: dict[str, list[tuple[str, str]]] = {}
         txn = db.start_transaction()
         for i in range(15):
             name = id_generator()
@@ -97,7 +99,7 @@ class TestMdbx(unittest.TestCase):
                 self.assertEqual(dbi.get(txn, key.encode("utf-8")).decode("utf-8"), val)
         db.close()
 
-    def test_success_close_written_map(self):
+    def test_success_close_written_map(self) -> None:
         MDBX_TEST_DB_DIR = "%s/%s" % (MDBX_TEST_DIR, inspect.stack()[0][3])
         db = mdbx.Env(MDBX_TEST_DB_DIR, maxdbs=1024)
         txn = db.start_transaction()
@@ -107,11 +109,11 @@ class TestMdbx(unittest.TestCase):
         opened_map.close()
         db.close()
 
-    def test_multi_write(self):
+    def test_multi_write(self) -> None:
         MDBX_TEST_DB_DIR = "%s/%s" % (MDBX_TEST_DIR, inspect.stack()[0][3])
         geo = mdbx.Geometry(-1, -1, 2147483648, -1, -1, -1)
         db = mdbx.Env(MDBX_TEST_DB_DIR, maxdbs=1024, geometry=geo)
-        generated_db_names = {}
+        generated_db_names: dict[str, dict[bytes, bytes]] = {}
         for i in range(16):
             name = id_generator().encode("utf-8")
             if name not in generated_db_names:
@@ -142,7 +144,7 @@ class TestMdbx(unittest.TestCase):
         txn.abort()
         db.close()
 
-    def test_replace(self):
+    def test_replace(self) -> None:
         MDBX_TEST_DB_DIR = "%s/%s" % (MDBX_TEST_DIR, inspect.stack()[0][3])
         db = mdbx.Env(MDBX_TEST_DB_DIR, maxdbs=1024)
         txn = db.start_transaction()
@@ -163,7 +165,7 @@ class TestMdbx(unittest.TestCase):
         txn.commit()
         db.close()
 
-    def test_delete(self):
+    def test_delete(self) -> None:
         MDBX_TEST_DB_DIR = "%s/%s" % (MDBX_TEST_DIR, inspect.stack()[0][3])
         db = mdbx.Env(MDBX_TEST_DB_DIR, maxdbs=1024)
         txn = db.rw_transaction()
@@ -181,7 +183,7 @@ class TestMdbx(unittest.TestCase):
         txn.commit()
         db.close()
 
-    def test_env(self):
+    def test_env(self) -> None:
         """
         Test all env related methods, except reading and writing
         """
@@ -229,7 +231,7 @@ class TestMdbx(unittest.TestCase):
         dbi = txn.open_map()
         if sys.platform != "win32":
             self.assertEqual(dbi.get(txn, MDBX_TEST_KEY), MDBX_TEST_VAL_BINARY)
-        dbi.drop(txn, MDBX_TEST_KEY)
+        dbi.drop(txn, True)
         self.assertEqual(dbi.get(txn, MDBX_TEST_KEY), None)
         txn.commit()
 
@@ -251,7 +253,7 @@ class TestMdbx(unittest.TestCase):
 
         env.close()
 
-    def test_userctx(self):
+    def test_userctx(self) -> None:
         MDBX_TEST_DB_DIR = "%s/%s" % (MDBX_TEST_DIR, inspect.stack()[0][3])
         env = mdbx.Env(MDBX_TEST_DB_DIR, maxdbs=1)
 
@@ -286,7 +288,7 @@ class TestMdbx(unittest.TestCase):
 
         txn.abort()
 
-    def test_txn(self):
+    def test_txn(self) -> None:
         MDBX_TEST_DB_DIR = "%s/%s" % (MDBX_TEST_DIR, inspect.stack()[0][3])
         env = mdbx.Env(MDBX_TEST_DB_DIR, maxdbs=1)
         txn = env.start_transaction(mdbx.MDBXTXNFlags.MDBX_TXN_RDONLY)
@@ -338,13 +340,13 @@ class TestMdbx(unittest.TestCase):
     # # Need to think this over too
     # #   def rls_func()
 
-    def test_get_build_info(self):
+    def test_get_build_info(self) -> Any:
         mdbx.get_build_info()
 
-    def test_get_version_info(self):
+    def test_get_version_info(self) -> Any:
         mdbx.get_version_info()
 
-    def test_get_sysram(self):
+    def test_get_sysram(self) -> bool | None:
         try:
             mdbx._lib.mdbx_get_sysraminfo
         except Exception:
@@ -357,15 +359,16 @@ class TestMdbx(unittest.TestCase):
                 ctypes.byref(a), ctypes.byref(b), ctypes.byref(c)
             )
         )
+        return None
 
-    def test_txnid(self):
+    def test_txnid(self) -> None:
         MDBX_TEST_DB_DIR = "%s/%s" % (MDBX_TEST_DIR, inspect.stack()[0][3])
         env = mdbx.Env(MDBX_TEST_DB_DIR, maxdbs=1)
 
         txn = env.start_transaction()
         self.assertTrue(txn.id())
 
-    def test_cursor_bind(self):
+    def test_cursor_bind(self) -> None:
         return
         # Haven't succeeded in making this work
         # MDBX_TEST_DB_DIR="%s/%s" % (MDBX_TEST_DIR, inspect.stack()[0][3])
@@ -384,7 +387,7 @@ class TestMdbx(unittest.TestCase):
         # self.assertTrue(cursor.on_last())
         # cursor.delete()
 
-    def test_cursor_open(self):
+    def test_cursor_open(self) -> None:
         MDBX_TEST_DB_DIR = "%s/%s" % (MDBX_TEST_DIR, inspect.stack()[0][3])
         a = "abc".encode("utf-8")
         b = "def".encode("utf-8")
