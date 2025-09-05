@@ -1596,7 +1596,7 @@ class TXN:
         self,
         env: Env,
         parent: Optional[TXN] = None,
-        flags: int = MDBXTXNFlags.MDBX_TXN_READWRITE,
+        flags: MDBXTXNFlags = MDBXTXNFlags.MDBX_TXN_READWRITE,
         ctx: Optional[Any] = None,
     ):
         """
@@ -2167,7 +2167,7 @@ class Env(object):
 
     def start_transaction(
         self,
-        flags: int = MDBXTXNFlags.MDBX_TXN_READWRITE,
+        flags: MDBXTXNFlags = MDBXTXNFlags.MDBX_TXN_READWRITE,
         parent_txn: Optional[TXN] = None,
     ) -> TXN:
         """
