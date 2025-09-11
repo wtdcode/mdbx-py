@@ -1938,7 +1938,9 @@ class TXN:
         transaction, the database will be created.
         """
         dbi: DBI | None
-        if isinstance(db, str):
+        if isinstance(db, DBI):
+            dbi = db
+        elif isinstance(db, str):
             if self._flags.is_read_only():
                 dbi = self.open_map(db)
             else:
