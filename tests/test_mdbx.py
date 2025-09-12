@@ -456,5 +456,12 @@ class TestMdbx(unittest.TestCase):
                             break
                         self.assertEqual(value, b'2')
 
+    def test_parent_txn(self) -> None:
+        MDBX_TEST_DB_DIR = "%s/%s" % (MDBX_TEST_DIR, inspect.stack()[0][3])
+        env = mdbx.Env(MDBX_TEST_DB_DIR, maxdbs=2)
+        with env.rw_transaction() as parent_txn:
+            with env.rw_transaction(parent_txn) as txn:
+                pass
+
 if __name__ == "__main__":
     unittest.main()

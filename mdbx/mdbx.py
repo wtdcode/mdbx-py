@@ -1651,7 +1651,7 @@ class TXN:
         self._dependents: list[ReferenceType[Cursor]] = []
         env._dependents.append(weakref.ref(self))
         ret = _lib.mdbx_txn_begin_ex(
-            env._env, parent, flags, ctypes.pointer(self._txn), self._ctx
+            env._env, parent._txn if parent else None, flags, ctypes.pointer(self._txn), self._ctx
         )
         if ret != MDBXError.MDBX_SUCCESS.value:
             raise make_exception(ret)
@@ -2197,8 +2197,8 @@ class Env(object):
     def ro_transaction(self) -> TXN:
         return self.start_transaction(MDBXTXNFlags.MDBX_TXN_RDONLY, None)
 
-    def rw_transaction(self) -> TXN:
-        return self.start_transaction(MDBXTXNFlags.MDBX_TXN_READWRITE, None)
+    def rw_transaction(self, parent_txn: Optional[TXN] = None) -> TXN:
+        return self.start_transaction(MDBXTXNFlags.MDBX_TXN_READWRITE, parent_txn)
 
     def start_transaction(
         self,
