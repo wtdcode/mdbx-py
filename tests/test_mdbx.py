@@ -431,6 +431,30 @@ class TestMdbx(unittest.TestCase):
         self.assertFalse(cursor.on_first())
         cursor.delete()
 
+    def test_set_range(self) -> None:
+        MDBX_TEST_DB_DIR = "%s/%s" % (MDBX_TEST_DIR, inspect.stack()[0][3])
+        env = mdbx.Env(MDBX_TEST_DB_DIR, maxdbs=2)
+        with env.rw_transaction() as txn:
+           txn.create_map(name=b'range')
+           txn.commit()
+
+        with env.rw_transaction() as txn:
+            with txn.open_map(name=b'range') as db:
+               db.put(txn, b'OPEN', b'1')
+               db.put(txn, b'QBUZZ*BRANDING*QBUZZ-5-\x94\x00', b'2')
+               db.put(txn, b'TEST', b'3')
+               txn.commit()
+
+        with env.ro_transaction() as txn:
+            with txn.open_map(name=b'range') as db:
+                with txn.cursor(db=db) as cur:
+                    self.assertEqual(db.get(txn, b'QBUZZ*BRANDING*QBUZZ-5-\x94\x00'), b'2')
+                    self.assertEqual(cur.get(b'TEST', mdbx.MDBXCursorOp.MDBX_SET_KEY), b'3')
+                    start_key = b'QBUZZ*BRANDING*QBUZZ-'
+                    for key, value in cur.iter(start_key):
+                        if not key.startswith(start_key):
+                            break
+                        self.assertEqual(value, b'2')
 
 if __name__ == "__main__":
     unittest.main()
