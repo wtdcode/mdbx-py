@@ -836,23 +836,23 @@ class MDBXCursorOp(enum.IntEnum):
     MDBX_PREV = 12
 
     # \ref MDBX_DUPSORT -only: Position at previous data item of current key.
-    MDBX_PREV_DUP = 12
+    MDBX_PREV_DUP = 13
 
     # Position at last data item of previous key
-    MDBX_PREV_NODUP = 13
+    MDBX_PREV_NODUP = 14
 
     # Position at specified key
-    MDBX_SET = 14
+    MDBX_SET = 15
 
     # Position at specified key, return both key and data
-    MDBX_SET_KEY = 15
+    MDBX_SET_KEY = 16
 
     # Position at first key greater than or equal to specified key.
-    MDBX_SET_RANGE = 16
+    MDBX_SET_RANGE = 17
 
     # \ref MDBX_DUPFIXED -only: Position at previous page and return up to
     # a page of duplicate data items.
-    MDBX_PREV_MULTIPLE = 17
+    MDBX_PREV_MULTIPLE = 18
 
     # Position at first key-value pair greater than or equal to specified
     # return both key and data, and the return code depends on a exact match.
@@ -865,7 +865,7 @@ class MDBXCursorOp(enum.IntEnum):
     # i.e. for a pairs/tuples of a key and an each data value of duplicates.
     # Returns \ref MDBX_SUCCESS if key-value pair found exactly and
     # \ref MDBX_RESULT_TRUE if the next pair was returned.
-    MDBX_SET_LOWERBOUND = 18
+    MDBX_SET_LOWERBOUND = 19
 
 
 class MDBXError(enum.IntFlag):
