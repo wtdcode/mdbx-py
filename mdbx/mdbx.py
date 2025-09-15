@@ -1965,7 +1965,7 @@ class TXN:
         if ret != MDBXError.MDBX_SUCCESS.value:
             raise make_exception(ret)
 
-    def cursor(self, db: Optional[DBI | str] = None) -> Cursor:
+    def cursor(self, db: DBI | str | None) -> Cursor:
         """
         Creata a cursor on a database. If the argument is str and current transaction is a read-write
         transaction, the database will be created.
