@@ -464,17 +464,23 @@ class TestMdbx(unittest.TestCase):
                 pass
 
     def test_null_bytes(self) -> None:
+        BYTES_MAP = b'0m\x00\x00'
         BYTES_KEY = b'1k\x00\x00'
         BYTES_VALUE = b'2v\x00\x00'
         MDBX_TEST_DB_DIR = "%s/%s" % (MDBX_TEST_DIR, inspect.stack()[0][3])
         env = mdbx.Env(MDBX_TEST_DB_DIR, maxdbs=2)
         with env.rw_transaction() as txn:
-            dbi = txn.create_map(BYTES_KEY)
+            dbi = txn.create_map(BYTES_MAP)
             dbi.put(txn, BYTES_KEY, BYTES_VALUE)
             txn.commit()
 
         with env.ro_transaction() as txn:
-            dbi = txn.open_map(BYTES_KEY)
+            cursor = txn.cursor(None)
+            for k, v in cursor.iter():
+                self.assertEqual(k, BYTES_MAP)
+
+        with env.ro_transaction() as txn:
+            dbi = txn.open_map(BYTES_MAP)
             value = dbi.get(txn, BYTES_KEY)
             self.assertEqual(value, BYTES_VALUE)
             cursor = txn.cursor(dbi)

@@ -1875,12 +1875,12 @@ class TXN:
         flags: int = MDBXDBFlags.MDBX_CREATE,
     ) -> DBI:
         """
-        Wrapper around mdbx_dbi_open, intended to create a database(map)
+        Wrapper around mdbx_dbi_open2, intended to create a database(map)
 
         Raises MDBXErrorExc or OSerror
         :param name: DBI name or None, if default DB is to be opened
         :type name: str or bytes
-        :param flags: Combination of MDBXDBFlags, passed to mdbx_dbi_open
+        :param flags: Combination of MDBXDBFlags, passed to mdbx_dbi_open2
         :type flags: Combination of MDBXDBFlags
         :returns: Reference to opened DBI DBI if success, or False in case TXN was invalid
         :rtype DBI in case of success, or bool in case of failure
@@ -1893,12 +1893,12 @@ class TXN:
         flags: int = MDBXDBFlags.MDBX_DB_DEFAULTS,
     ) -> DBI:
         """
-        Wrapper around mdbx_dbi_open, intended to open an existing map
+        Wrapper around mdbx_dbi_open2, intended to open an existing map
 
         Raises MDBXErrorExc or OSerror
         :param name: DBI name or None, if default DB is to be opened
         :type name: str or bytes
-        :param flags: Combination of MDBXDBFlags, passed to mdbx_dbi_open
+        :param flags: Combination of MDBXDBFlags, passed to mdbx_dbi_open2
         :type flags: Combination of MDBXDBFlags
         :returns: Reference to opened DBI DBI if success, or False in case TXN was invalid
         :rtype DBI in case of success, or bool in case of failure
@@ -1911,8 +1911,8 @@ class TXN:
                 cname = name.encode("utf-8")
             else:
                 cname = name
-            bname = ctypes.c_char_p(cname) if cname else None
-            ret = _lib.mdbx_dbi_open(self._txn, bname, flags, ctypes.pointer(dbi))
+            key_iovec = Iovec(cname)
+            ret = _lib.mdbx_dbi_open2(self._txn, ctypes.byref(key_iovec), flags, ctypes.pointer(dbi))
             if ret != MDBXError.MDBX_SUCCESS.value:
                 raise make_exception(ret)
 
@@ -3324,13 +3324,13 @@ _lib.mdbx_thread_register.argtypes = [ctypes.c_void_p]
 _lib.mdbx_thread_register.restype = ctypes.c_int
 _lib.mdbx_thread_unregister.argtypes = [ctypes.c_void_p]
 _lib.mdbx_thread_unregister.restype = ctypes.c_int
-_lib.mdbx_dbi_open.argtypes = [
+_lib.mdbx_dbi_open2.argtypes = [
     ctypes.POINTER(MDBXTXN),
-    ctypes.c_char_p,
+    ctypes.c_void_p,
     ctypes.c_int,
     ctypes.POINTER(ctypes.c_uint32),
 ]
-_lib.mdbx_dbi_open.restype = ctypes.c_int
+_lib.mdbx_dbi_open2.restype = ctypes.c_int
 _lib.mdbx_txn_abort.argtypes = [ctypes.POINTER(MDBXTXN)]
 _lib.mdbx_txn_abort.restype = ctypes.c_int
 _lib.mdbx_txn_set_userctx.argtypes = [ctypes.POINTER(MDBXTXN), ctypes.c_void_p]
