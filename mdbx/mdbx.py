@@ -1965,7 +1965,7 @@ class TXN:
         if ret != MDBXError.MDBX_SUCCESS.value:
             raise make_exception(ret)
 
-    def cursor(self, db: DBI | str | None) -> Cursor:
+    def cursor(self, db: DBI | str | bytes | None) -> Cursor:
         """
         Creata a cursor on a database. If the argument is str and current transaction is a read-write
         transaction, the database will be created.
@@ -1973,13 +1973,16 @@ class TXN:
         dbi: DBI | None
         if isinstance(db, DBI):
             dbi = db
-        elif isinstance(db, str):
+        elif isinstance(db, str) or isinstance(db, bytes):
             if self._flags.is_read_only():
                 dbi = self.open_map(db)
             else:
                 dbi = self.create_map(db)
         elif db is None:
             dbi = self.open_map(db)
+        else:
+            raise RuntimeError("db is not a DBI, str or bytes")
+
         return Cursor(dbi, self, self._ctx)
 
 
