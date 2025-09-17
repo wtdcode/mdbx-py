@@ -15,6 +15,8 @@ Contributions and feedbacks are highly welcome.
 A quick sample to read all values from the default database:
 
 ```python
+from mdbx import Env
+
 with Env(...) as env:
     with env.ro_transaction() as txn:
         with txn.cursor() as cur:
