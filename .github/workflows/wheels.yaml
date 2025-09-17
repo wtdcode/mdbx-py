@@ -59,7 +59,7 @@ jobs:
           CIBW_BUILD_FRONTEND: build # pip backend doesn't seem including our dynamic libraries
           CIBW_BUILD: ${{ matrix.config.cibw }}
           CIBW_ENVIRONMENT: MACOSX_DEPLOYMENT_TARGET=13.0 SYSTEM_VERSION_COMPAT=0 # Shitty arm macOS
-          CIBW_BEFORE_BUILD_LINUX: apt update && apt install wget -y && cd libmdbx && git fetch --tags && wget -c https://github.com/ninja-build/ninja/releases/download/v1.12.1/ninja-linux.zip && unzip ninja-linux.zip -d /usr/local/bin && chmod +x /usr/local/bin/ninja
+          CIBW_BEFORE_BUILD_LINUX: yum install wget -y && git fetch --tags && wget -c https://github.com/ninja-build/ninja/releases/download/v1.12.1/ninja-linux.zip && unzip ninja-linux.zip -d /usr/local/bin && chmod +x /usr/local/bin/ninja
           CIBW_BEFORE_BUILD_WINDOWS: choco install ninja git && cd libmdbx && git fetch --tags
           CIBW_BEFORE_BUILD_MACOS: brew install ninja git && cd libmdbx && git fetch --tags
           CIBW_TEST_REQUIRES: pytest
