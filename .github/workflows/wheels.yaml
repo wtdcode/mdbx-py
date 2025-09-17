@@ -2,6 +2,11 @@ name: Build
 
 on: [push, pull_request]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+
 jobs:
   build_wheels:
     name: Fast build on ${{ matrix.config.os }} for ${{ matrix.config.cibw }} and ${{ matrix.config.cibw_skip }} 
@@ -133,7 +138,7 @@ jobs:
           CIBW_ENVIRONMENT: MACOSX_DEPLOYMENT_TARGET=13.0 SYSTEM_VERSION_COMPAT=0 # Shitty arm macOS
           CIBW_BEFORE_BUILD_LINUX: cd libmdbx && git fetch --tags && wget -c https://github.com/ninja-build/ninja/releases/download/v1.12.1/ninja-linux.zip && unzip ninja-linux.zip -d /usr/local/bin && chmod +x /usr/local/bin/ninja
           CIBW_BEFORE_BUILD_WINDOWS: choco install ninja cmake git && cd libmdbx && git fetch --tags
-          CIBW_BEFORE_BUILD_MACOS: brew install ninja cmake git && cd libmdbx && git fetch --tags
+          CIBW_BEFORE_BUILD_MACOS: brew install ninja git && cd libmdbx && git fetch --tags
           CIBW_TEST_REQUIRES: pytest
           CIBW_TEST_COMMAND: pytest {package}/tests
           CIBW_SKIP:  ${{ matrix.config.cibw_skip }}
