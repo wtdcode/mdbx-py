@@ -68,7 +68,7 @@ def build(setup_kws: dict):
     if sys.platform == "win32":
         plat = 'Win32' if platform.architecture()[0] == '32bit' else 'x64'
         cmake_gen += [
-            "-G", "Visual Studio 16 2019",
+            "-G", "Visual Studio 17 2022",
             "-A", plat
         ]
         
