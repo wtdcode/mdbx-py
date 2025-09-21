@@ -16,16 +16,16 @@ jobs:
       matrix:
         config:
           - os: ubuntu-latest
-            cibw: "cp39*"
+            cibw: "cp310*"
             cibw_skip: "*musllinux*"
           - os: windows-2022
-            cibw: "cp39*"
+            cibw: "cp310*"
             cibw_skip: "*-win32"
           - os: macos-13
-            cibw: "cp39*"
+            cibw: "cp310*"
             cibw_skip: ""
           - os: macos-latest
-            cibw: "cp39*"
+            cibw: "cp310*"
             cibw_skip: ""
 
     steps:
