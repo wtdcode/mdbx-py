@@ -27,17 +27,17 @@ class MDBXIterTest(unittest.TestCase):
                     txn.commit()
 
             with env.ro_transaction() as txn:
-                with txn.cursor() as cur:
+                with txn.cursor(None) as cur:
                     k, v = cur.first()
                     self.assertEqual((k, v), expected[0])
                     k, v = cur.last()
                     self.assertEqual((k, v), expected[-1])
 
-                with txn.cursor() as cur:
+                with txn.cursor(None) as cur:
                     vals = [(k, v) for k, v in cur.iter()]
                     self.assertEqual(vals, expected)
 
-                with txn.cursor() as cur:
+                with txn.cursor(None) as cur:
                     vals = [(k, v) for k, v in cur.iter(start_key=struct.pack(">I", 4))]
                     self.assertEqual(vals, expected[3:])
 
