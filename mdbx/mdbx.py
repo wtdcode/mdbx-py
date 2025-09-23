@@ -2624,6 +2624,25 @@ class DBI:
         if ret != MDBXError.MDBX_SUCCESS.value:
             raise make_exception(ret)
 
+    def get_sequence(self, txn: TXN, increment: int = 0) -> int:
+        """
+        Wrapper around mdbx_dbi_sequence.
+
+        :param txn: Transaction handle
+        :param dbi: Database handle
+        :param increment: Value to increase the sequence by (0 for read-only transactions)
+        :return: Previous sequence value
+        :raises MDBXErrorExc: on failure
+        """
+        result = ctypes.c_uint64(0)
+        ret = _lib.mdbx_dbi_sequence(txn._txn, self._dbi, ctypes.byref(result), ctypes.c_uint64(increment))
+        if ret == MDBXError.MDBX_SUCCESS.value:
+            return result.value
+        elif ret == MDBXError.MDBX_RESULT_TRUE.value:
+            raise OverflowError("Sequence increment resulted in overflow")
+        else:
+            raise make_exception(ret)
+
 
 class Cursor():
     """
@@ -3346,3 +3365,11 @@ _lib.mdbx_is_dirty.restype = ctypes.c_int
 _lib.mdbx_txn_straggler.argtypes = [
     ctypes.POINTER(MDBXTXN), ctypes.POINTER(ctypes.c_int)]
 _lib.mdbx_txn_straggler.restype = ctypes.c_int
+
+_lib.mdbx_dbi_sequence.argtypes = [
+    ctypes.POINTER(MDBXTXN),
+    MDBXDBI,
+    ctypes.POINTER(ctypes.c_uint64),
+    ctypes.c_uint64,
+]
+_lib.mdbx_dbi_sequence.restype = ctypes.c_int
