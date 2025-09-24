@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "libmdbx"
-version = "0.3.0"
+version = "0.3.1"
 description = "The python bindings to libmdbx."
 homepage = "https://github.com/wtdcode/mdbx-py"
 authors = ["lazymio <mio@lazym.io>"]
@@ -28,7 +28,7 @@ generate-setup-file = false
 script = "build_mdbx.py"
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.10"
 
 
 [build-system]

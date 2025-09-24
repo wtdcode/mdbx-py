@@ -83,22 +83,22 @@ jobs:
       matrix:
         config:
           - os: ubuntu-latest
-            cibw: "{cp310*,cp311*}"
+            cibw: "{cp311*}"
             cibw_skip: "*musllinux*"
           - os: ubuntu-latest
             cibw: "{cp312*,cp313*}"
             cibw_skip: "*musllinux*"
           - os: windows-2022
-            cibw: "{cp310*,cp311*}"
+            cibw: "{cp311*}"
             cibw_skip: "*-win32"
           - os: windows-2022
             cibw: "{cp312*,cp313*}"
             cibw_skip: "*-win32"
           - os: macos-13
-            cibw: "{cp310*,cp311*,cp312*,cp313*}"
+            cibw: "{cp311*,cp312*,cp313*}"
             cibw_skip: ""
           - os: macos-latest
-            cibw: "{cp310*,cp311*,cp312*,cp313*}"
+            cibw: "{cp311*,cp312*,cp313*}"
             cibw_skip: ""
     if: ${{ startsWith(github.ref, 'refs/tags') || contains(github.event.head_commit.message, 'CI(full)') }}
     steps:
