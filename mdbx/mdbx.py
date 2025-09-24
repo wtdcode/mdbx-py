@@ -785,9 +785,11 @@ class MDBXCopyFlags(enum.IntFlag):
     # Force to make resizeable copy, i.e. dynamic size instead of fixed
     MDBX_CP_FORCE_DYNAMIC_SIZE = 2
 
+
 class CEnum(enum.IntEnum):
     def from_param(self) -> int:
         return int(self)
+
 
 class MDBXCursorOp(CEnum):
     # Position at first key/data item
@@ -1648,7 +1650,11 @@ class TXN:
         self._dependents: list[ReferenceType[Cursor]] = []
         env._dependents.append(weakref.ref(self))
         ret = _lib.mdbx_txn_begin_ex(
-            env._env, parent._txn if parent else None, flags, ctypes.pointer(self._txn), self._ctx
+            env._env,
+            parent._txn if parent else None,
+            flags,
+            ctypes.pointer(self._txn),
+            self._ctx,
         )
         if ret != MDBXError.MDBX_SUCCESS.value:
             raise make_exception(ret)
@@ -1909,7 +1915,9 @@ class TXN:
             else:
                 cname = name
             key_iovec = Iovec(cname)
-            ret = _lib.mdbx_dbi_open2(self._txn, ctypes.byref(key_iovec), flags, ctypes.pointer(dbi))
+            ret = _lib.mdbx_dbi_open2(
+                self._txn, ctypes.byref(key_iovec), flags, ctypes.pointer(dbi)
+            )
             if ret != MDBXError.MDBX_SUCCESS.value:
                 raise make_exception(ret)
 
@@ -2806,7 +2814,9 @@ class DBI:
         :raises MDBXErrorExc: on failure
         """
         result = ctypes.c_uint64(0)
-        ret = _lib.mdbx_dbi_sequence(txn._txn, self._dbi, ctypes.byref(result), ctypes.c_uint64(increment))
+        ret = _lib.mdbx_dbi_sequence(
+            txn._txn, self._dbi, ctypes.byref(result), ctypes.c_uint64(increment)
+        )
         if ret == MDBXError.MDBX_SUCCESS.value:
             return result.value
         elif ret == MDBXError.MDBX_RESULT_TRUE.value:
