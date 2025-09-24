@@ -37,7 +37,9 @@ subprocess.run(["rm", "-rf", MDBX_TEST_DIR, "default_db"])
 subprocess.run(["mkdir", "-p", MDBX_TEST_DIR])
 
 
-def id_generator(size: int = 6, chars: str=string.ascii_uppercase + string.digits) -> str:
+def id_generator(
+    size: int = 6, chars: str = string.ascii_uppercase + string.digits
+) -> str:
     return "".join(random.choice(chars) for _ in range(size))
 
 
@@ -243,9 +245,7 @@ class TestMdbx(unittest.TestCase):
         env.get_maxvalsize()
 
         env.set_option(mdbx.MDBXOption.MDBX_opt_txn_dp_initial, 2048)
-        self.assertEqual(
-            env.get_option(mdbx.MDBXOption.MDBX_opt_txn_dp_initial), 2048
-        )
+        self.assertEqual(env.get_option(mdbx.MDBXOption.MDBX_opt_txn_dp_initial), 2048)
 
         env.get_fd()
 
@@ -297,7 +297,7 @@ class TestMdbx(unittest.TestCase):
 
         txn.renew()
 
-        self.assertEqual(txn.get_info().txn_id, 3) # Maybe this is a bit too naive
+        self.assertEqual(txn.get_info().txn_id, 3)  # Maybe this is a bit too naive
 
     # def test_hsr(self):
     #   import threading
@@ -435,26 +435,30 @@ class TestMdbx(unittest.TestCase):
         MDBX_TEST_DB_DIR = "%s/%s" % (MDBX_TEST_DIR, inspect.stack()[0][3])
         env = mdbx.Env(MDBX_TEST_DB_DIR, maxdbs=2)
         with env.rw_transaction() as txn:
-           txn.create_map(name=b'range')
-           txn.commit()
+            txn.create_map(name=b"range")
+            txn.commit()
 
         with env.rw_transaction() as txn:
-            with txn.open_map(name=b'range') as db:
-               db.put(txn, b'OPEN', b'1')
-               db.put(txn, b'QBUZZ*BRANDING*QBUZZ-5-\x94\x00', b'2')
-               db.put(txn, b'TEST', b'3')
-               txn.commit()
+            with txn.open_map(name=b"range") as db:
+                db.put(txn, b"OPEN", b"1")
+                db.put(txn, b"QBUZZ*BRANDING*QBUZZ-5-\x94\x00", b"2")
+                db.put(txn, b"TEST", b"3")
+                txn.commit()
 
         with env.ro_transaction() as txn:
-            with txn.open_map(name=b'range') as db:
+            with txn.open_map(name=b"range") as db:
                 with txn.cursor(db=db) as cur:
-                    self.assertEqual(db.get(txn, b'QBUZZ*BRANDING*QBUZZ-5-\x94\x00'), b'2')
-                    self.assertEqual(cur.get(b'TEST', mdbx.MDBXCursorOp.MDBX_SET_KEY), b'3')
-                    start_key = b'QBUZZ*BRANDING*QBUZZ-'
+                    self.assertEqual(
+                        db.get(txn, b"QBUZZ*BRANDING*QBUZZ-5-\x94\x00"), b"2"
+                    )
+                    self.assertEqual(
+                        cur.get(b"TEST", mdbx.MDBXCursorOp.MDBX_SET_KEY), b"3"
+                    )
+                    start_key = b"QBUZZ*BRANDING*QBUZZ-"
                     for key, value in cur.iter(start_key):
                         if not key.startswith(start_key):
                             break
-                        self.assertEqual(value, b'2')
+                        self.assertEqual(value, b"2")
 
     def test_parent_txn(self) -> None:
         MDBX_TEST_DB_DIR = "%s/%s" % (MDBX_TEST_DIR, inspect.stack()[0][3])
@@ -464,9 +468,9 @@ class TestMdbx(unittest.TestCase):
                 pass
 
     def test_null_bytes(self) -> None:
-        BYTES_MAP = b'0m\x00\x00'
-        BYTES_KEY = b'1k\x00\x00'
-        BYTES_VALUE = b'2v\x00\x00'
+        BYTES_MAP = b"0m\x00\x00"
+        BYTES_KEY = b"1k\x00\x00"
+        BYTES_VALUE = b"2v\x00\x00"
         MDBX_TEST_DB_DIR = "%s/%s" % (MDBX_TEST_DIR, inspect.stack()[0][3])
         env = mdbx.Env(MDBX_TEST_DB_DIR, maxdbs=2)
         with env.rw_transaction() as txn:
@@ -487,6 +491,7 @@ class TestMdbx(unittest.TestCase):
             for k, v in cursor.iter():
                 self.assertEqual(v, BYTES_VALUE)
                 self.assertEqual(k, BYTES_KEY)
+
 
 if __name__ == "__main__":
     unittest.main()

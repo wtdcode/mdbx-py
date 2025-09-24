@@ -785,76 +785,75 @@ class MDBXCopyFlags(enum.IntFlag):
     # Force to make resizeable copy, i.e. dynamic size instead of fixed
     MDBX_CP_FORCE_DYNAMIC_SIZE = 2
 
-class CEnum(enum.IntEnum):
-    def _generate_next_value_(name, start, count, last_values):
-        return count
 
+class CEnum(enum.IntEnum):
     def from_param(self) -> int:
         return int(self)
 
+
 class MDBXCursorOp(CEnum):
     # Position at first key/data item
-    MDBX_FIRST = enum.auto()
+    MDBX_FIRST = 0
 
     # \ref MDBX_DUPSORT -only: Position at first data item of current key.
-    MDBX_FIRST_DUP = enum.auto()
+    MDBX_FIRST_DUP = 1
 
     # \ref MDBX_DUPSORT -only: Position at key/data pair.
-    MDBX_GET_BOTH = enum.auto()
+    MDBX_GET_BOTH = 2
 
     # \ref MDBX_DUPSORT -only: Position at given key and at first data greater
     # than or equal to specified data.
-    MDBX_GET_BOTH_RANGE = enum.auto()
+    MDBX_GET_BOTH_RANGE = 3
 
     # Return key/data at current cursor position
-    MDBX_GET_CURRENT = enum.auto()
+    MDBX_GET_CURRENT = 4
 
     # \ref MDBX_DUPFIXED -only: Return up to a page of duplicate data items
     # from current cursor position. Move cursor to prepare
     # for \ref MDBX_NEXT_MULTIPLE.
-    MDBX_GET_MULTIPLE = enum.auto()
+    MDBX_GET_MULTIPLE = 5
 
     # Position at last key/data item
-    MDBX_LAST = enum.auto()
+    MDBX_LAST = 6
 
     # \ref MDBX_DUPSORT -only: Position at last data item of current key.
-    MDBX_LAST_DUP = enum.auto()
+    MDBX_LAST_DUP = 7
 
     # Position at next data item
-    MDBX_NEXT = enum.auto()
+    MDBX_NEXT = 8
 
     # \ref MDBX_DUPSORT -only: Position at next data item of current key.
-    MDBX_NEXT_DUP = enum.auto()
+    MDBX_NEXT_DUP = 9
 
     # \ref MDBX_DUPFIXED -only: Return up to a page of duplicate data items
     # from next cursor position. Move cursor to prepare
     # for `MDBX_NEXT_MULTIPLE`.
-    MDBX_NEXT_MULTIPLE = enum.auto()
+    MDBX_NEXT_MULTIPLE = 10
 
     # Position at first data item of next key
-    MDBX_NEXT_NODUP = enum.auto()
+    MDBX_NEXT_NODUP = 11
 
     # Position at previous data item
-    MDBX_PREV = enum.auto()
+    MDBX_PREV = 12
 
     # \ref MDBX_DUPSORT -only: Position at previous data item of current key.
-    MDBX_PREV_DUP = enum.auto()
+    MDBX_PREV_DUP = 13
 
     # Position at last data item of previous key
-    MDBX_PREV_NODUP = enum.auto()
+    MDBX_PREV_NODUP = 14
 
     # Position at specified key
-    MDBX_SET = enum.auto()
+    MDBX_SET = 15
 
     # Position at specified key, return both key and data
-    MDBX_SET_KEY = enum.auto()
+    MDBX_SET_KEY = 16
 
     # Position at first key greater than or equal to specified key.
-    MDBX_SET_RANGE = enum.auto()
+    MDBX_SET_RANGE = 17
 
     # \ref MDBX_DUPFIXED -only: Position at previous page and return up to
     # a page of duplicate data items.
-    MDBX_PREV_MULTIPLE = enum.auto()
+    MDBX_PREV_MULTIPLE = 18
 
     # Position at first key-value pair greater than or equal to specified
     # return both key and data, and the return code depends on a exact match.
@@ -867,7 +866,7 @@ class MDBXCursorOp(CEnum):
     # i.e. for a pairs/tuples of a key and an each data value of duplicates.
     # Returns \ref MDBX_SUCCESS if key-value pair found exactly and
     # \ref MDBX_RESULT_TRUE if the next pair was returned.
-    MDBX_SET_LOWERBOUND = enum.auto()
+    MDBX_SET_LOWERBOUND = 19
 
     # Positions cursor at first key-value pair greater than specified,
     # return both key and data, and the return code depends on whether a
@@ -881,35 +880,35 @@ class MDBXCursorOp(CEnum):
     # i.e. for a pairs/tuples of a key and an each data value of duplicates.
     # Returns \ref MDBX_SUCCESS if the greater pair was returned or
     # \ref MDBX_NOTFOUND otherwise.
-    MDBX_SET_UPPERBOUND = enum.auto()
+    MDBX_SET_UPPERBOUND = 20
 
     # Doubtless cursor positioning at a specified key.
-    MDBX_TO_KEY_LESSER_THAN = enum.auto()
-    MDBX_TO_KEY_LESSER_OR_EQUAL = enum.auto()
-    MDBX_TO_KEY_EQUAL = enum.auto()
-    MDBX_TO_KEY_GREATER_OR_EQUAL = enum.auto()
-    MDBX_TO_KEY_GREATER_THAN = enum.auto()
+    MDBX_TO_KEY_LESSER_THAN = 21
+    MDBX_TO_KEY_LESSER_OR_EQUAL = 22
+    MDBX_TO_KEY_EQUAL = 23
+    MDBX_TO_KEY_GREATER_OR_EQUAL = 24
+    MDBX_TO_KEY_GREATER_THAN = 25
 
     # Doubtless cursor positioning at a specified key-value pair
     # for dupsort/multi-value hives.
-    MDBX_TO_EXACT_KEY_VALUE_LESSER_THAN = enum.auto()
-    MDBX_TO_EXACT_KEY_VALUE_LESSER_OR_EQUAL = enum.auto()
-    MDBX_TO_EXACT_KEY_VALUE_EQUAL = enum.auto()
-    MDBX_TO_EXACT_KEY_VALUE_GREATER_OR_EQUAL = enum.auto()
-    MDBX_TO_EXACT_KEY_VALUE_GREATER_THAN = enum.auto()
+    MDBX_TO_EXACT_KEY_VALUE_LESSER_THAN = 26
+    MDBX_TO_EXACT_KEY_VALUE_LESSER_OR_EQUAL = 27
+    MDBX_TO_EXACT_KEY_VALUE_EQUAL = 28
+    MDBX_TO_EXACT_KEY_VALUE_GREATER_OR_EQUAL = 29
+    MDBX_TO_EXACT_KEY_VALUE_GREATER_THAN = 30
 
     # Doubtless cursor positioning at a specified key-value pair
     # for dupsort/multi-value hives.
-    MDBX_TO_PAIR_LESSER_THAN = enum.auto()
-    MDBX_TO_PAIR_LESSER_OR_EQUAL = enum.auto()
-    MDBX_TO_PAIR_EQUAL = enum.auto()
-    MDBX_TO_PAIR_GREATER_OR_EQUAL = enum.auto()
-    MDBX_TO_PAIR_GREATER_THAN = enum.auto()
+    MDBX_TO_PAIR_LESSER_THAN = 31
+    MDBX_TO_PAIR_LESSER_OR_EQUAL = 32
+    MDBX_TO_PAIR_EQUAL = 33
+    MDBX_TO_PAIR_GREATER_OR_EQUAL = 34
+    MDBX_TO_PAIR_GREATER_THAN = 35
 
     # \ref MDBX_DUPFIXED -only: Seek to given key and return up to a page of
     # duplicate data items from current cursor position. Move cursor to prepare
     # for \ref MDBX_NEXT_MULTIPLE. \see MDBX_GET_MULTIPLE
-    MDBX_SEEK_AND_GET_MULTIPLE = enum.auto()
+    MDBX_SEEK_AND_GET_MULTIPLE = 36
 
 
 class MDBXError(enum.IntFlag):
@@ -1057,24 +1056,24 @@ class MDBXError(enum.IntFlag):
 
 
 class MDBXOption(CEnum):
-    MDBX_opt_max_db = enum.auto()
-    MDBX_opt_max_readers = enum.auto()
-    MDBX_opt_sync_bytes = enum.auto()
-    MDBX_opt_sync_period = enum.auto()
-    MDBX_opt_rp_augment_limit = enum.auto()
-    MDBX_opt_loose_limit = enum.auto()
-    MDBX_opt_dp_reserve_limit = enum.auto()
-    MDBX_opt_txn_dp_limit = enum.auto()
-    MDBX_opt_txn_dp_initial = enum.auto()
-    MDBX_opt_spill_max_denominator = enum.auto()
-    MDBX_opt_spill_min_denominator = enum.auto()
-    MDBX_opt_spill_parent4child_denominator = enum.auto()
+    MDBX_opt_max_db = 0
+    MDBX_opt_max_readers = 1
+    MDBX_opt_sync_bytes = 2
+    MDBX_opt_sync_period = 3
+    MDBX_opt_rp_augment_limit = 4
+    MDBX_opt_loose_limit = 5
+    MDBX_opt_dp_reserve_limit = 6
+    MDBX_opt_txn_dp_limit = 7
+    MDBX_opt_txn_dp_initial = 8
+    MDBX_opt_spill_max_denominator = 9
+    MDBX_opt_spill_min_denominator = 10
+    MDBX_opt_spill_parent4child_denominator = 11
 
 
 class MDBXEnvDeleteMode(CEnum):
-    MDBX_ENV_JUST_DELETE = enum.auto()
-    MDBX_ENV_ENSURE_UNUSED = enum.auto()
-    MDBX_ENV_WAIT_FOR_UNUSED = enum.auto()
+    MDBX_ENV_JUST_DELETE = 0
+    MDBX_ENV_ENSURE_UNUSED = 1
+    MDBX_ENV_WAIT_FOR_UNUSED = 2
 
 
 class MDBXDBIState(enum.IntFlag):
@@ -1085,26 +1084,26 @@ class MDBXDBIState(enum.IntFlag):
 
 
 class MDBXPageType(CEnum):
-    MDBX_page_broken = enum.auto()
-    MDBX_page_meta = enum.auto()
-    MDBX_page_large = enum.auto()
-    MDBX_page_branch = enum.auto()
-    MDBX_page_leaf = enum.auto()
-    MDBX_page_dupfixed_leaf = enum.auto()
-    MDBX_subpage_leaf = enum.auto()
-    MDBX_subpage_dupfixed_leaf = enum.auto()
-    MDBX_subpage_broken = enum.auto()
+    MDBX_page_broken = 0
+    MDBX_page_meta = 1
+    MDBX_page_large = 2
+    MDBX_page_branch = 3
+    MDBX_page_leaf = 4
+    MDBX_page_dupfixed_leaf = 5
+    MDBX_subpage_leaf = 6
+    MDBX_subpage_dupfixed_leaf = 7
+    MDBX_subpage_broken = 8
 
 
 class MDBXCopyMode(CEnum):
-    MDBX_CP_DEFAULTS = enum.auto()
+    MDBX_CP_DEFAULTS = 0
 
     # Copy with compactification: Omit free space from copy and renumber all
     # pages sequentially
-    MDBX_CP_COMPACT = enum.auto()
+    MDBX_CP_COMPACT = 1
 
     # Force to make resizeable copy, i.e. dynamic size instead of fixed
-    MDBX_CP_FORCE_DYNAMIC_SIZE = enum.auto()
+    MDBX_CP_FORCE_DYNAMIC_SIZE = 2
 
 
 class MDBXBuildInfo(ctypes.Structure):
@@ -1651,7 +1650,11 @@ class TXN:
         self._dependents: list[ReferenceType[Cursor]] = []
         env._dependents.append(weakref.ref(self))
         ret = _lib.mdbx_txn_begin_ex(
-            env._env, parent._txn if parent else None, flags, ctypes.pointer(self._txn), self._ctx
+            env._env,
+            parent._txn if parent else None,
+            flags,
+            ctypes.pointer(self._txn),
+            self._ctx,
         )
         if ret != MDBXError.MDBX_SUCCESS.value:
             raise make_exception(ret)
@@ -1912,7 +1915,9 @@ class TXN:
             else:
                 cname = name
             key_iovec = Iovec(cname)
-            ret = _lib.mdbx_dbi_open2(self._txn, ctypes.byref(key_iovec), flags, ctypes.pointer(dbi))
+            ret = _lib.mdbx_dbi_open2(
+                self._txn, ctypes.byref(key_iovec), flags, ctypes.pointer(dbi)
+            )
             if ret != MDBXError.MDBX_SUCCESS.value:
                 raise make_exception(ret)
 
@@ -2809,7 +2814,9 @@ class DBI:
         :raises MDBXErrorExc: on failure
         """
         result = ctypes.c_uint64(0)
-        ret = _lib.mdbx_dbi_sequence(txn._txn, self._dbi, ctypes.byref(result), ctypes.c_uint64(increment))
+        ret = _lib.mdbx_dbi_sequence(
+            txn._txn, self._dbi, ctypes.byref(result), ctypes.c_uint64(increment)
+        )
         if ret == MDBXError.MDBX_SUCCESS.value:
             return result.value
         elif ret == MDBXError.MDBX_RESULT_TRUE.value:
