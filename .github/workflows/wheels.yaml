@@ -88,10 +88,10 @@ jobs:
           - os: ubuntu-latest
             cibw: "{cp312*,cp313*}"
             cibw_skip: "*musllinux*"
-          - os: windows-2019
+          - os: windows-2022
             cibw: "{cp310*,cp311*}"
             cibw_skip: "*-win32"
-          - os: windows-2019
+          - os: windows-2022
             cibw: "{cp312*,cp313*}"
             cibw_skip: "*-win32"
           - os: macos-13
