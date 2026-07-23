@@ -1989,7 +1989,7 @@ class TXN:
         :param canary: Canary to put
         :type MDBXCanary
         """
-        ret = _lib.mdbx_canary_get(self._txn, ctypes.byref(canary))
+        ret = _lib.mdbx_canary_put(self._txn, ctypes.byref(canary))
         if ret != MDBXError.MDBX_SUCCESS.value:
             raise make_exception(ret)
 
