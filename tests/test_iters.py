@@ -122,8 +122,7 @@ class MDBXIterTest(unittest.TestCase):
                     self.assertEqual(dbi.get_sequence(txn, 0), 2)
 
     def tearDown(self):
-        del self._folder
-        shutil.rmtree(self._folder_path, ignore_errors=True)
+        self._folder.cleanup()
         return super().tearDown()
 
 
