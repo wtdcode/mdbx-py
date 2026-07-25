@@ -58,41 +58,42 @@ class MDBXIterTest(unittest.TestCase):
                     txn.commit()
 
             with env.ro_transaction() as txn:
-                with txn.cursor("test") as cur:
-                    k, v = cur.first()
-                    self.assertEqual((k, v), (expected[0][0], expected[0][1][0]))
-                    v = cur.first_dup()
-                    self.assertEqual(v, expected[0][1][0])
-                    v = cur.last_dup()
-                    self.assertEqual(v, expected[0][1][-1])
-                    k, v = cur.last()
-                    self.assertEqual((k, v), (expected[-1][0], expected[-1][1][-1]))
-                    v = cur.first_dup()
-                    self.assertEqual(v, expected[-1][1][0])
-                    v = cur.last_dup()
-                    self.assertEqual(v, expected[-1][1][-1])
+                with txn.open_map("test", MDBXDBFlags.MDBX_DUPSORT) as dbi:
+                    with txn.cursor(dbi) as cur:
+                        k, v = cur.first()
+                        self.assertEqual((k, v), (expected[0][0], expected[0][1][0]))
+                        v = cur.first_dup()
+                        self.assertEqual(v, expected[0][1][0])
+                        v = cur.last_dup()
+                        self.assertEqual(v, expected[0][1][-1])
+                        k, v = cur.last()
+                        self.assertEqual((k, v), (expected[-1][0], expected[-1][1][-1]))
+                        v = cur.first_dup()
+                        self.assertEqual(v, expected[-1][1][0])
+                        v = cur.last_dup()
+                        self.assertEqual(v, expected[-1][1][-1])
 
-                with txn.cursor("test") as cur:
-                    vals = []
-                    for row in cur.iter_dupsort_rows():
-                        row_vals = {}
-                        for k, v in row:
-                            if k not in row_vals:
-                                row_vals[k] = []
-                            row_vals[k].append(v)
-                        self.assertEqual(len(row_vals), 1)
-                        vals.append(
-                            (
-                                list(row_vals.keys())[0],
-                                tuple(list(row_vals.values())[0]),
+                    with txn.cursor(dbi) as cur:
+                        vals = []
+                        for row in cur.iter_dupsort_rows():
+                            row_vals = {}
+                            for k, v in row:
+                                if k not in row_vals:
+                                    row_vals[k] = []
+                                row_vals[k].append(v)
+                            self.assertEqual(len(row_vals), 1)
+                            vals.append(
+                                (
+                                    list(row_vals.keys())[0],
+                                    tuple(list(row_vals.values())[0]),
+                                )
                             )
-                        )
-                    self.assertEqual(vals, expected)
+                        self.assertEqual(vals, expected)
 
-                with txn.cursor("test") as cur:
-                    vals = [(k, v) for k, v in cur.iter_dupsort()]
-                    expected = [(x, dup) for x, dups in expected for dup in dups]
-                    self.assertEqual(vals, expected)
+                    with txn.cursor(dbi) as cur:
+                        vals = [(k, v) for k, v in cur.iter_dupsort()]
+                        expected = [(x, dup) for x, dups in expected for dup in dups]
+                        self.assertEqual(vals, expected)
 
     def test_sequence(self) -> None:
         with Env(self._folder_path.absolute().as_posix()) as env:

@@ -911,6 +911,39 @@ class MDBXCursorOp(CEnum):
     MDBX_SEEK_AND_GET_MULTIPLE = 36
 
 
+_POSIX_ERRNO_MAP = {
+    "MDBX_ENODATA": errno.ENODATA,
+    "MDBX_EINVAL": errno.EINVAL,
+    "MDBX_EACCES": errno.EACCES,
+    "MDBX_ENOMEM": errno.ENOMEM,
+    "MDBX_EROFS": errno.EROFS,
+    "MDBX_ENOSYS": errno.ENOSYS,
+    "MDBX_EIO": errno.EIO,
+    "MDBX_EPERM": errno.EPERM,
+    "MDBX_EINTR": errno.EINTR,
+    "MDBX_ENOFILE": errno.ENOENT,
+    "MDBX_EREMOTE": 15,
+}
+
+
+_WIN32_ERRNO_MAP = {
+    "MDBX_ENODATA": 38,  # ERROR_HANDLE_EOF
+    "MDBX_EINVAL": 87,  # ERROR_INVALID_PARAMETER
+    "MDBX_EACCES": 5,  # ERROR_ACCESS_DENIED
+    "MDBX_ENOMEM": 14,  # ERROR_OUTOFMEMORY
+    "MDBX_EROFS": 6008,  # ERROR_FILE_READ_ONLY
+    "MDBX_ENOSYS": 50,  # ERROR_NOT_SUPPORTED
+    "MDBX_EIO": 29,  # ERROR_WRITE_FAULT
+    "MDBX_EPERM": 1,  # ERROR_INVALID_FUNCTION
+    "MDBX_EINTR": 1223,  # ERROR_CANCELLED
+    "MDBX_ENOFILE": 2,  # ERROR_FILE_NOT_FOUND
+    "MDBX_EREMOTE": 4352,  # ERROR_REMOTE_STORAGE_MEDIA_ERROR
+}
+
+IS_WINDOWS = sys.platform == "win32"
+_ERRNO_MAP = _WIN32_ERRNO_MAP if IS_WINDOWS else _POSIX_ERRNO_MAP
+
+
 class MDBXError(enum.IntFlag):
     # Successful result
     MDBX_SUCCESS = 0
@@ -1042,17 +1075,7 @@ class MDBXError(enum.IntFlag):
     # The last of MDBX-added error codes
     MDBX_LAST_ADDED_ERRCODE = MDBX_TXN_OVERLAPPING
 
-    MDBX_ENODATA = errno.ENODATA
-    MDBX_EINVAL = errno.EINVAL
-    MDBX_EACCES = errno.EACCES
-    MDBX_ENOMEM = errno.ENOMEM
-    MDBX_EROFS = errno.EROFS
-    MDBX_ENOSYS = errno.ENOSYS
-    MDBX_EIO = errno.EIO
-    MDBX_EPERM = errno.EPERM
-    MDBX_EINTR = errno.EINTR
-    MDBX_ENOFILE = errno.ENOENT
-    MDBX_EREMOTE = 15  # Win32 doesn't have this
+    locals().update(_ERRNO_MAP)
 
 
 class MDBXOption(CEnum):
@@ -1966,7 +1989,7 @@ class TXN:
         :param canary: Canary to put
         :type MDBXCanary
         """
-        ret = _lib.mdbx_canary_get(self._txn, ctypes.byref(canary))
+        ret = _lib.mdbx_canary_put(self._txn, ctypes.byref(canary))
         if ret != MDBXError.MDBX_SUCCESS.value:
             raise make_exception(ret)
 
