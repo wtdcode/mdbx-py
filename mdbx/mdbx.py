@@ -3713,15 +3713,12 @@ _lib.mdbx_is_readahead_reasonable.argtypes = [
 ]
 _lib.mdbx_is_readahead_reasonable.restype = ctypes.c_int
 
-try:
-    _lib.mdbx_get_sysraminfo.argtypes = [
-        ctypes.POINTER(ctypes.c_int),
-        ctypes.POINTER(ctypes.c_int),
-        ctypes.POINTER(ctypes.c_int),
-    ]
-    _lib.mdbx_get_sysraminfo.restype = ctypes.c_int
-except:  # noqa: E722
-    pass
+_lib.mdbx_get_sysraminfo.argtypes = [
+    ctypes.POINTER(ctypes.c_int),
+    ctypes.POINTER(ctypes.c_int),
+    ctypes.POINTER(ctypes.c_int),
+]
+_lib.mdbx_get_sysraminfo.restype = ctypes.c_int
 
 _lib.mdbx_is_dirty.argtypes = [ctypes.POINTER(MDBXTXN), ctypes.c_void_p]
 _lib.mdbx_is_dirty.restype = ctypes.c_int
