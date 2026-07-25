@@ -6,6 +6,8 @@ import sys
 import multiprocessing
 import shutil
 import platform
+import json
+import re
 
 SO_FILE = {
     "linux": "libmdbx.so",
@@ -29,8 +31,10 @@ def build(setup_kws: dict):
     debug = "DEBUG" in os.environ
     pwd = Path(__file__).parent.resolve()
     out_lib = pwd / "mdbx" / "lib"
+    mdbx_py = pwd / "mdbx"/ "mdbx.py"
     libmdbx_source = pwd / "libmdbx"
     dist_folder = libmdbx_source / "dist"
+    platform_enums = pwd / "platform_enums.c"
     
     # If there is already dist
     if not dist_folder.exists():
@@ -103,6 +107,36 @@ def build(setup_kws: dict):
             cwd=tmpdir_path
         )
         shutil.copy(tmpdir_path / conf / SO_FILE, out_lib)
-    
+
+    enum_exe = tmpdir_path / "platform_enums"
+    if sys.platform == "win32":
+        enum_exe = enum_exe.with_suffix(".exe")
+        plat = 'Win32' if platform.architecture()[0] == '32bit' else 'x64'
+        conf = 'Debug' if debug else 'Release'
+        # Compile with MSVC
+        subprocess.check_call([
+            "cl", str(platform_enums),
+            f"/Fe{enum_exe}"
+        ], cwd=tmpdir_path)
+    else:
+        # Compile with GCC/Clang
+        subprocess.check_call([
+            "gcc", str(platform_enums), "-o", str(enum_exe)
+        ], cwd=tmpdir_path)
+
+    output = subprocess.check_output([str(enum_exe)], text=True)
+    mdbx_errors = json.loads(output)
+
+    content = mdbx_py.read_text()
+
+    for key, value in mdbx_errors.items():
+        pattern = re.compile(rf"{key}\s*=\s*.*$", re.MULTILINE)
+        replacement = f"{key} = {value}"
+        content, n = pattern.subn(replacement, content)
+        if n == 0:
+            print(f"Warning: {key} not found in {mdbx_py}")
+
+    mdbx_py.write_text(content)
+
 if __name__ == "__main__":
     build({})
