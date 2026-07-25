@@ -162,7 +162,7 @@ jobs:
       - name: Build SDist
         run: |
           sudo apt update && sudo apt install ninja-build git build-essential -y
-          cd libmdbx && git fetch --tags && make V=1 dist && cd ..
+          cd libmdbx && git fetch --tags && make V=1 && cd ..
           python3 -m pip install -U pip build
           python3 -m build --sdist
 
