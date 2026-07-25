@@ -349,20 +349,16 @@ class TestMdbx(unittest.TestCase):
     def test_get_version_info(self) -> Any:
         mdbx.get_version_info()
 
-    def test_get_sysram(self) -> bool | None:
-        try:
-            mdbx._lib.mdbx_get_sysraminfo
-        except Exception:
-            return True
+    def test_get_sysram(self) -> None:
+        mdbx.mdbx._lib.mdbx_get_sysraminfo
         a = ctypes.c_int()
         b = ctypes.c_int()
         c = ctypes.c_int()
         self.assertFalse(
-            mdbx._lib.mdbx_get_sysraminfo(
+            mdbx.mdbx._lib.mdbx_get_sysraminfo(
                 ctypes.byref(a), ctypes.byref(b), ctypes.byref(c)
             )
         )
-        return None
 
     def test_txnid(self) -> None:
         MDBX_TEST_DB_DIR = "%s/%s" % (MDBX_TEST_DIR, inspect.stack()[0][3])
