@@ -3137,7 +3137,7 @@ class Cursor:
             return
         raise RuntimeError("Cursor is not available")
 
-    def delete(self, cursor_op: MDBXCursorOp = MDBXCursorOp.MDBX_FIRST) -> None:
+    def delete(self, cursor_op: MDBXPutFlags = MDBXPutFlags.MDBX_CURRENT) -> None:
         """
         Thin wrapper around mdbx_cursor_del
 
