@@ -33,6 +33,9 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: "recursive"
+          # libmdbx derives its version from `git describe`, and a shallow
+          # submodule clone carries no tags.
+          fetch-depth: 0
 
       - name: '🛠️ Win MSVC 64 setup'
         if: contains(matrix.config.os, 'windows')
@@ -106,6 +109,9 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: "recursive"
+          # libmdbx derives its version from `git describe`, and a shallow
+          # submodule clone carries no tags.
+          fetch-depth: 0
       
       - name: '🛠️ Setup Dependency'
         if: contains(matrix.config.os, 'ubuntu')
@@ -158,13 +164,29 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: "recursive"
+          # libmdbx derives its version from `git describe`, and a shallow
+          # submodule clone carries no tags.
+          fetch-depth: 0
 
       - name: Build SDist
         run: |
           sudo apt update && sudo apt install ninja-build git build-essential -y
-          cd libmdbx && make V=1 && cd ..
+          cd libmdbx && make V=1 dist && cd ..
           python3 -m pip install -U pip build
           python3 -m build --sdist
+
+      # Building the tarball says nothing about whether it installs: the wheel
+      # jobs all build from the git checkout, so anything the sdist fails to
+      # ship goes unnoticed until someone pip installs it.
+      - name: Check SDist installs
+        run: |
+          python3 -m venv /tmp/sdist-venv
+          /tmp/sdist-venv/bin/python -m pip install -U pip pytest
+          /tmp/sdist-venv/bin/python -m pip install dist/*.tar.gz
+          # Run outside the source tree, otherwise ./mdbx shadows the installed
+          # package and we would just be testing the checkout again.
+          mkdir -p /tmp/sdist-check && cp -r tests /tmp/sdist-check/
+          cd /tmp/sdist-check && /tmp/sdist-venv/bin/python -m pytest tests -q
 
       - uses: actions/upload-artifact@v4
         with:

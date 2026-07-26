@@ -39,7 +39,7 @@ def build(setup_kws: dict):
     # If there is already dist
     if not dist_folder.exists():
         if sys.platform in ["linux", "linux2"]:
-            subprocess.check_call(["make"], cwd=libmdbx_source)
+            subprocess.check_call(["make", "dist"], cwd=libmdbx_source)
     
     if have_git() and (libmdbx_source / ".git").exists():
         source_folder = libmdbx_source
@@ -80,7 +80,11 @@ def build(setup_kws: dict):
         ]
         
     cmake_gen += [
-        "-S", str(source_folder.absolute()), "-B", str(tmpdir_path.absolute())
+        "-S", str(source_folder.absolute()), "-B", str(tmpdir_path.absolute()),
+        # The non-amalgamated tree builds libmdbx's own test suite by default,
+        # which does not compile with MSVC: test/extra/rename_dbi.c wants
+        # unistd.h. We only ever consume the library itself.
+        "-DMDBX_ENABLE_TESTS=OFF"
     ]
     cmake_gen += build_type
     subprocess.check_call(
@@ -119,12 +123,15 @@ def build(setup_kws: dict):
         # Compile with MSVC
         subprocess.check_call([
             "cl", str(platform_enums),
+            f"/I{source_folder.absolute()}",
             f"/Fe{enum_exe}"
         ], cwd=tmpdir_path)
     else:
         # Compile with GCC/Clang
         subprocess.check_call([
-            "gcc", str(platform_enums), "-o", str(enum_exe)
+            "gcc", str(platform_enums),
+            f"-I{source_folder.absolute()}",
+            "-o", str(enum_exe)
         ], cwd=tmpdir_path)
 
     output = subprocess.check_output([str(enum_exe)], text=True)

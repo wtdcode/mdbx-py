@@ -1,4 +1,4 @@
-#include "libmdbx/mdbx.h"
+#include "mdbx.h"
 #include <stdio.h>
 
 int main(void) {
