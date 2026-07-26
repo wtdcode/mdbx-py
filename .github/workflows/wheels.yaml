@@ -175,6 +175,19 @@ jobs:
           python3 -m pip install -U pip build
           python3 -m build --sdist
 
+      # Building the tarball says nothing about whether it installs: the wheel
+      # jobs all build from the git checkout, so anything the sdist fails to
+      # ship goes unnoticed until someone pip installs it.
+      - name: Check SDist installs
+        run: |
+          python3 -m venv /tmp/sdist-venv
+          /tmp/sdist-venv/bin/python -m pip install -U pip pytest
+          /tmp/sdist-venv/bin/python -m pip install dist/*.tar.gz
+          # Run outside the source tree, otherwise ./mdbx shadows the installed
+          # package and we would just be testing the checkout again.
+          mkdir -p /tmp/sdist-check && cp -r tests /tmp/sdist-check/
+          cd /tmp/sdist-check && /tmp/sdist-venv/bin/python -m pytest tests -q
+
       - uses: actions/upload-artifact@v4
         with:
           name: sdist-archive
