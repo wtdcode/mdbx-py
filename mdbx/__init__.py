@@ -8,6 +8,7 @@ from .mdbx import (
     MDBXCursorOp,
     MDBXDBFlags,
     MDBXEnvFlags,
+    MDBXPutFlags,
     MDBXStat,
     MDBXErrorExc,
     MDBXEnvinfo,
