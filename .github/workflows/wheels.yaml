@@ -21,7 +21,7 @@ jobs:
           - os: windows-2022
             cibw: "cp310*"
             cibw_skip: "*-win32"
-          - os: macos-13
+          - os: macos-15-intel
             cibw: "cp310*"
             cibw_skip: ""
           - os: macos-latest
@@ -94,7 +94,7 @@ jobs:
           - os: windows-2022
             cibw: "{cp312*,cp313*}"
             cibw_skip: "*-win32"
-          - os: macos-13
+          - os: macos-15-intel
             cibw: "{cp311*,cp312*,cp313*}"
             cibw_skip: ""
           - os: macos-latest
