@@ -59,9 +59,9 @@ jobs:
           CIBW_BUILD_FRONTEND: build # pip backend doesn't seem including our dynamic libraries
           CIBW_BUILD: ${{ matrix.config.cibw }}
           CIBW_ENVIRONMENT: MACOSX_DEPLOYMENT_TARGET=13.0 SYSTEM_VERSION_COMPAT=0 # Shitty arm macOS
-          CIBW_BEFORE_BUILD_LINUX: pip install ninja && git fetch --tags 
-          CIBW_BEFORE_BUILD_WINDOWS: choco install ninja git && cd libmdbx && git fetch --tags
-          CIBW_BEFORE_BUILD_MACOS: brew install ninja git && cd libmdbx && git fetch --tags
+          CIBW_BEFORE_BUILD_LINUX: pip install ninja
+          CIBW_BEFORE_BUILD_WINDOWS: choco install ninja git
+          CIBW_BEFORE_BUILD_MACOS: brew install ninja git
           CIBW_TEST_REQUIRES: pytest
           CIBW_TEST_COMMAND: pytest {package}/tests
           CIBW_SKIP:  ${{ matrix.config.cibw_skip }}
@@ -136,9 +136,9 @@ jobs:
           CIBW_BUILD_FRONTEND: build # pip backend doesn't seem including our dynamic libraries
           CIBW_BUILD: ${{ matrix.config.cibw }}
           CIBW_ENVIRONMENT: MACOSX_DEPLOYMENT_TARGET=13.0 SYSTEM_VERSION_COMPAT=0 # Shitty arm macOS
-          CIBW_BEFORE_BUILD_LINUX: pip install ninja && git fetch --tags
-          CIBW_BEFORE_BUILD_WINDOWS: choco install ninja cmake git && cd libmdbx && git fetch --tags
-          CIBW_BEFORE_BUILD_MACOS: brew install ninja git && cd libmdbx && git fetch --tags
+          CIBW_BEFORE_BUILD_LINUX: pip install ninja
+          CIBW_BEFORE_BUILD_WINDOWS: choco install ninja cmake git
+          CIBW_BEFORE_BUILD_MACOS: brew install ninja git
           CIBW_TEST_REQUIRES: pytest
           CIBW_TEST_COMMAND: pytest {package}/tests
           CIBW_SKIP:  ${{ matrix.config.cibw_skip }}
@@ -162,7 +162,7 @@ jobs:
       - name: Build SDist
         run: |
           sudo apt update && sudo apt install ninja-build git build-essential -y
-          cd libmdbx && git fetch --tags && make V=1 && cd ..
+          cd libmdbx && make V=1 && cd ..
           python3 -m pip install -U pip build
           python3 -m build --sdist
 
