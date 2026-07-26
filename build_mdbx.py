@@ -80,7 +80,11 @@ def build(setup_kws: dict):
         ]
         
     cmake_gen += [
-        "-S", str(source_folder.absolute()), "-B", str(tmpdir_path.absolute())
+        "-S", str(source_folder.absolute()), "-B", str(tmpdir_path.absolute()),
+        # The non-amalgamated tree builds libmdbx's own test suite by default,
+        # which does not compile with MSVC: test/extra/rename_dbi.c wants
+        # unistd.h. We only ever consume the library itself.
+        "-DMDBX_ENABLE_TESTS=OFF"
     ]
     cmake_gen += build_type
     subprocess.check_call(
