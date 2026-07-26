@@ -73,7 +73,10 @@ def build(setup_kws: dict):
         plat = 'Win32' if platform.architecture()[0] == '32bit' else 'x64'
         cmake_gen += [
             "-G", "Visual Studio 17 2022",
-            "-A", plat
+            "-A", plat,
+            # CMake >= 4.4 reports c_std_23 for MSVC, so libmdbx would pick
+            # /std:clatest, where MSVC chokes on the C23 attributes in mdbx.c.
+            "-DCMAKE_C_STANDARD=11"
         ]
         
     cmake_gen += [

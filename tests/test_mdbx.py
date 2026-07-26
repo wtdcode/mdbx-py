@@ -76,17 +76,21 @@ class TestMdbx(unittest.TestCase):
     def test_db_iter(self) -> None:
         MDBX_TEST_DB_DIR = "%s/%s" % (MDBX_TEST_DIR, inspect.stack()[0][3])
         db = mdbx.Env(MDBX_TEST_DB_DIR, maxdbs=1024)
-        db_pairs: dict[str, list[tuple[str, str]]] = {}
+        db_pairs: dict[str, dict[str, str]] = {}
         txn = db.start_transaction()
         for i in range(15):
             name = id_generator()
             dbi = txn.create_map(name)
-            db_pairs[name] = []
+            db_pairs[name] = {}
+            ref = db_pairs[name]
 
             for i in range(1024):
-                pair = (id_generator(), id_generator())
-                db_pairs[name].append(pair)
-                dbi.put(txn, pair[0].encode("utf-8"), pair[1].encode("utf-8"))
+                key, val = id_generator(), id_generator()
+                # A repeated key overwrites the previous value, so only the
+                # last one can be asserted afterwards.
+                if key not in ref:
+                    ref[key] = val
+                    dbi.put(txn, key.encode("utf-8"), val.encode("utf-8"))
         txn.commit()
         del txn
         dbi.close()
@@ -97,7 +101,7 @@ class TestMdbx(unittest.TestCase):
         txn = db.start_transaction(flags=mdbx.MDBXTXNFlags.MDBX_TXN_RDONLY)
         for db_name, pairs in db_pairs.items():
             dbi = txn.open_map(db_name)
-            for key, val in pairs:
+            for key, val in pairs.items():
                 self.assertEqual(dbi.get(txn, key.encode("utf-8")).decode("utf-8"), val)
         db.close()
 
