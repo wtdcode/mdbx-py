@@ -123,12 +123,15 @@ def build(setup_kws: dict):
         # Compile with MSVC
         subprocess.check_call([
             "cl", str(platform_enums),
+            f"/I{source_folder.absolute()}",
             f"/Fe{enum_exe}"
         ], cwd=tmpdir_path)
     else:
         # Compile with GCC/Clang
         subprocess.check_call([
-            "gcc", str(platform_enums), "-o", str(enum_exe)
+            "gcc", str(platform_enums),
+            f"-I{source_folder.absolute()}",
+            "-o", str(enum_exe)
         ], cwd=tmpdir_path)
 
     output = subprocess.check_output([str(enum_exe)], text=True)

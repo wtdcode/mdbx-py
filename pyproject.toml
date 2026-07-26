@@ -16,6 +16,8 @@ packages = [
 ]
 include = [
     { path = "libmdbx/dist/*", format = "sdist"},
+    # build_mdbx.py compiles this to generate the platform error codes
+    { path = "platform_enums.c", format = "sdist"},
     { path = "mdbx/lib/*", format = "wheel" },
 ]
 
